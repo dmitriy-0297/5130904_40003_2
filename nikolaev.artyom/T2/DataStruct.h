@@ -25,6 +25,7 @@ bool compareDataStruct(const DataStruct &data1, const DataStruct &data2);
 bool isDouble(const std::string& str);
 bool isLLong(const std::string& str);
 bool isString(const std::string& str);
+std::string makeScientific(const double &data);
 }
 
 #endif

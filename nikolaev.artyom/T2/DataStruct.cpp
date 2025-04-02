@@ -1,4 +1,4 @@
-#include <iomanip>
+#include <cmath>
 #include <sstream>
 #include "DataStruct.h"
 #include "StreamGuard.h"
@@ -18,6 +18,69 @@ bool isLLong(const std::string &str)
 bool isString(const std::string &str)
 {
   return std::regex_match(str, PATTERNFORKEY3);
+}
+
+std::string makeScientific(const double &data)
+{
+  if (data == 0.0)
+  {
+    return "0.0e0";
+  }
+
+  double absData = std::abs(data);
+  int exponent = static_cast<int>(std::floor(std::log10(absData)));
+  double mantissa = absData / std::pow(10.0, exponent);
+
+  if (mantissa >= 10.0)
+  {
+    mantissa /= 10.0;
+    exponent++;
+  }
+  else if (mantissa < 1.0)
+  {
+    mantissa *= 10.0;
+    exponent--;
+  }
+
+  mantissa = std::round(mantissa * 10.0) / 10.0;
+  if (mantissa == 10.0)
+  {
+    mantissa = 1.0;
+    exponent++;
+  }
+
+  std::string result;
+  if (data < 0)
+  {
+    result += '-';
+  }
+  std::string mantissaStr = std::to_string(mantissa);
+  size_t dotPos = mantissaStr.find('.');
+  if (dotPos != std::string::npos)
+  {
+    mantissaStr = mantissaStr.substr(0, dotPos + 2);
+  }
+
+  if (mantissaStr.back() == '0')
+  {
+    mantissaStr.erase(mantissaStr.find('.') + 2, std::string::npos);
+  }
+
+  if (mantissaStr.back() == '.')
+  {
+    mantissaStr += '0';
+  }
+
+  result += mantissaStr;
+  result += 'e';
+
+  if (exponent >= 0)
+  {
+    result += '+';
+  }
+  result += std::to_string(exponent);
+
+  return result;
 }
 
 std::istream &operator>>(std::istream &input, DataStruct &data)
@@ -134,7 +197,7 @@ std::ostream &operator<<(std::ostream &output, const DataStruct &data)
 
   StreamGuard guard(output);
 
-  output << "(:key1 "  << std::setprecision(1) << std::scientific << data.key1
+  output << "(:key1 "  << makeScientific(data.key1)
     << ":key2 " << data.key2 << "ll"
     << ":key3 " << data.key3 << ":)\n";
 
