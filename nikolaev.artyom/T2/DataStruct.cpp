@@ -111,13 +111,22 @@ std::istream &operator>>(std::istream &input, DataStruct &data)
 
       std::string value;
       char next_char;
+      bool inQuotes = false;
+
       while (stream.get(next_char))
       {
-        if (next_char == ':' || next_char == ')')
+        if (key == ":key3" && next_char == '"')
+        {
+          inQuotes = !inQuotes; // Переключаем состояние кавычек
+        }
+
+        // Если встречаем разделитель вне кавычек
+        if (!inQuotes && (next_char == ':' || next_char == ')'))
         {
           stream.unget();
           break;
         }
+
         value += next_char;
       }
 
@@ -150,15 +159,13 @@ std::istream &operator>>(std::istream &input, DataStruct &data)
       }
       else if (key == ":key3")
       {
-        if (isString(value))
+        // Удаляем обрамляющие кавычки, если они есть
+        if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
         {
-          temp.key3 = value;
-          found3 = true;
+          value = value.substr(1, value.size() - 2);
         }
-        else
-        {
-          parsingSuccess = false;
-        }
+        temp.key3 = value;
+        found3 = true;
       }
       else if (key == ":)")
       {
@@ -199,7 +206,7 @@ std::ostream &operator<<(std::ostream &output, const DataStruct &data)
 
   output << "(:key1 "  << makeScientific(data.key1)
     << ":key2 " << data.key2 << "ll"
-    << ":key3 " << data.key3 << ":)\n";
+    << ":key3 \"" << data.key3 << "\":)\n";
 
   return output;
 }

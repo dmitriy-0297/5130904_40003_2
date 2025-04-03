@@ -17,7 +17,7 @@ int main() {
   std::copy(
     dataVector.begin(),
     dataVector.end(),
-    std::ostream_iterator<artttnik::DataStruct>(std::cout, "\n")
+    std::ostream_iterator<artttnik::DataStruct>(std::cout, "")
   );
 
   return EXIT_SUCCESS;
