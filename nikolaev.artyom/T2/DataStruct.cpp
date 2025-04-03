@@ -117,10 +117,9 @@ std::istream &operator>>(std::istream &input, DataStruct &data)
       {
         if (key == ":key3" && next_char == '"')
         {
-          inQuotes = !inQuotes; // Переключаем состояние кавычек
+          inQuotes = !inQuotes;
         }
 
-        // Если встречаем разделитель вне кавычек
         if (!inQuotes && (next_char == ':' || next_char == ')'))
         {
           stream.unget();
@@ -159,7 +158,6 @@ std::istream &operator>>(std::istream &input, DataStruct &data)
       }
       else if (key == ":key3")
       {
-        // Удаляем обрамляющие кавычки, если они есть
         if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
         {
           value = value.substr(1, value.size() - 2);

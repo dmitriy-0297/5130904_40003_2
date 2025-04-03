@@ -1,13 +1,12 @@
 #ifndef DATASTRUCT_H
 #define DATASTRUCT_H
 
-#include <iostream>
 #include <string>
 #include <regex>
 
 namespace artttnik
 {
-const std::regex PATTERNFORKEY1(R"(^[-+]?[1-9](\.\d+)?[eE][-+]?\d+$)");
+const std::regex PATTERNFORKEY1("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)$");
 const std::regex PATTERNFORKEY2("^-?[0-9]+(ll|LL)$");
 const std::regex PATTERNFORKEY3("\".*\"");
 
