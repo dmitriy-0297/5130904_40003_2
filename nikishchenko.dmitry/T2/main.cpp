@@ -12,7 +12,7 @@ void cleanVector(std::vector<DataStruct>& vector);
 int main()
 {
     std::vector<DataStruct> dataVector;
-    while (!(std::cin.eof())
+    while (!(std::cin.eof()))
     {
     std::copy(
         std::istream_iterator<DataStruct>(std::cin),
