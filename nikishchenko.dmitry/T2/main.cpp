@@ -53,3 +53,4 @@ void cleanVector(std::vector<DataStruct>& vector)
         }
     }
 }
+
