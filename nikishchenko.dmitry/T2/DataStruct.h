@@ -16,7 +16,7 @@ const double INVALID_DOUBLE_INDICATOR = 0.0;
 const long long INVALID_LL_INDICATOR = 0ll;
 const std::string INVALID_STR_INDICATOR = "";
 
-const std::string REGEX_DBL_LIT_DOUBLE = "^([0]|[1-9][0-9]*)(\.([0-9][0-9]?))[dD]?$";
+const std::string REGEX_DBL_LIT_DOUBLE = "^([0]|[1-9][0-9]*)(\\.([0-9][0-9]?))[dD]?$";
 const std::string REGEX_DBL_LIT_INT = "^([0]|[1-9][0-9]*)[dD]?$";
 const std::string REGEX_SLL = "^[+-]?([0]|[1-9][0-9]*)(ll||LL)?$";
 
