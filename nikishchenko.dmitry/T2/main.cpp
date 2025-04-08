@@ -12,15 +12,11 @@ void cleanVector(std::vector<DataStruct>& vector);
 int main()
 {
     std::vector<DataStruct> dataVector;
-    while (!(std::cin.eof()))
-    {
     std::copy(
         std::istream_iterator<DataStruct>(std::cin),
         std::istream_iterator<DataStruct>(),
         std::back_inserter(dataVector)
     );
-    }
-    cleanVector(dataVector);
     std::sort(
         dataVector.begin(),
         dataVector.end(),
