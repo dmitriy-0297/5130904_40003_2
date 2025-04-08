@@ -17,7 +17,7 @@ StreamGuard::~StreamGuard()
     s_.flags(fmt_);
 }
 
-std::istream& operator>>(std::istream& in, SeparatorIO&& sep) 
+std::istream& operator>>(std::istream& in, SeparatorIO&& sep)
 {
     std::istream::sentry sentry(in);
     if (!sentry)
@@ -42,7 +42,7 @@ std::istream& operator>>(std::istream& in, LabelIO& sep)
     }
     std::string label = "";
     in >> label;
-    bool invalidInputMask = in.eof() || label.length() != LABEL_LENGTH \
+    bool invalidInputMask = in.eof() || label.length() != LABEL_LENGTH
         || label.substr(0, 3) != "key" || !(std::isdigit(label.c_str()[3]));
     if (invalidInputMask)
     {
@@ -50,7 +50,7 @@ std::istream& operator>>(std::istream& in, LabelIO& sep)
         return in;
     }
     sep.exp = label;
-    return in;    
+    return in;
 }
 
 void ignoreInput(std::istream& in)
@@ -131,7 +131,7 @@ std::istream& operator>>(std::istream& in, DataStruct& destination)
                 {
                     key2 = std::stoll(inputVal);
                 }
-                else 
+                else
                 {
                     stateFlag = false;
                 }
@@ -169,7 +169,7 @@ std::istream& operator>>(std::istream& in, DataStruct& destination)
             ignoreInput(in);
             destination.key1 = INVALID_DOUBLE_INDICATOR;
             destination.key2 = INVALID_LL_INDICATOR;
-            destination.key3 = INVALD_STR_INDICATOR;
+            destination.key3 = INVALID_STR_INDICATOR;
         }
         return in;
     }

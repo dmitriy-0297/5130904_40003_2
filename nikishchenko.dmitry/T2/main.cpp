@@ -12,7 +12,7 @@ void cleanVector(std::vector<DataStruct>& vector);
 int main()
 {
     std::vector<DataStruct> dataVector;
-    std::istringstream iss("(: :) (:key1 63d:key2 66660ll:key3 \"d\":) (:key1 0.12d:key2 228ll:key3 \"Absolute\":)");
+    std::istringstream iss("(: :) (:key 63d:key2 66660ll:key3 \"d\":) (:key1 0.12d:key2 228ll:key3 \"Absolute\":)");
 
     std::copy(
         std::istream_iterator<DataStruct>(iss),
@@ -42,7 +42,7 @@ void cleanVector(std::vector<DataStruct>& vector)
     {
         mask = (*iter).key1 == INVALID_DOUBLE_INDICATOR
             && (*iter).key2 == INVALID_LL_INDICATOR
-            && (*iter).key3 == INVALD_STR_INDICATOR;
+            && (*iter).key3 == INVALID_STR_INDICATOR;
         if (mask)
         {
             iter = vector.erase(iter);
