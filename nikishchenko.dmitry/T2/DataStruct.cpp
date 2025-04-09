@@ -74,6 +74,29 @@ void ignoreInput(std::istream& in)
     }
 }
 
+std::string getCorrectRound(const double& num)
+{
+    std::string intPart = std::to_string((int)num);
+
+    int doublePartNum = std::round((100 * num));
+    doublePartNum %= 100;
+    std::string doublePart = "";
+    if (doublePartNum > 0 && doublePartNum < 10)
+    {
+        doublePart = "0" + std::to_string(doublePartNum);
+    }
+    else if (doublePartNum % 10 == 0)
+    {
+        doublePart = std::to_string(doublePartNum/10);
+    }
+    else
+    {
+        doublePart = std::to_string(doublePartNum);
+    }
+
+    return intPart + "." + doublePart;
+}
+
 std::istream& operator>>(std::istream& in, DataStruct& destination)
 {
     std::istream::sentry sentry(in);
@@ -185,7 +208,7 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& dataStruct)
     }
     StreamGuard streamGuard(out);
     out << "(:key1 "
-        << std::fixed << std::setprecision(2) << dataStruct.key1 << "d"
+        << getCorrectRound(dataStruct.key1) << "d"
         << ":key2 "
         << dataStruct.key2 << "ll"
         << ":key3 \""
