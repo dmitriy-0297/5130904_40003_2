@@ -76,7 +76,7 @@ void ignoreInput(std::istream& in)
 
 std::string getCorrectRound(const double& num)
 {
-    std::string intPart = std::to_string((int)num);
+    std::string intPart = std::to_string(static_cast<int>(num));
 
     int doublePartNum = std::round((100 * num));
     doublePartNum %= 100;
