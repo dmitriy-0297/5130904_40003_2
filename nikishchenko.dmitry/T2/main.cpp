@@ -27,7 +27,7 @@ int main()
     std::copy(
         dataVector.begin(),
         dataVector.end(),
-        std::ostream_iterator<DataStruct>(std::cout, "")
+        std::ostream_iterator<DataStruct>(std::cout, "\n")
     );
 
     return EXIT_SUCCESS;
