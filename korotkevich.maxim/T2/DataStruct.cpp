@@ -74,7 +74,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
           break;
         }
       }
-            
+
       else if (key == "key2")
       {
         if (!std::regex_match(value, REGEXPATTERNKEY2))
@@ -87,7 +87,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
           gotKey2 = false;
           break;
         }
-               
+
         std::string complexPart = value.substr(3, value.size() - 4);
         std::istringstream complexStream(complexPart);
         double re, im;
@@ -99,10 +99,9 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
         parsed.key2 = std::complex<double>(re, im);
         gotKey2 = true;
       }
-            
+
       else if (key == "key3")
       {
-           
         if (!std::regex_match(value, REGEXPATTERNKEY3))
         {
           gotKey3 = false;
@@ -119,7 +118,6 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
       isFound = true;
       break;
     }
-   
   }
   if (!isFound)
   {
