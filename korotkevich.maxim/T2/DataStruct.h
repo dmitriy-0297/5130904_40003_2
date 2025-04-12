@@ -23,5 +23,4 @@ std::istream& operator>>(std::istream& input, DataStruct& data);
 std::ostream& operator<<(std::ostream& output, const DataStruct& data);
 bool dataStructComparator(const DataStruct& d1, const DataStruct& d2);
 }
-
 #endif

@@ -8,7 +8,7 @@ namespace krrmaxim
 std::istream& operator>>(std::istream& in, DataStruct& data)
 {
   std::string line;
-  bool isFound = false; 
+  bool isFound = false;
   DataStruct temp;
 
   while (std::getline(in, line))
@@ -51,12 +51,12 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
       std::string key = t.substr(0, pos);
       std::string value = t.substr(pos + 1);
 
-      if (key == "key1") 
+      if (key == "key1")
       {
         if (!std::regex_match(value, REGEXPATTERNKEY1))
         {
           gotKey1 = false;
-          break; 
+          break;
         }
         try
         {
@@ -68,14 +68,14 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
           gotKey1 = false;
           break;
         }
-        catch (const std::out_of_range& e) 
+        catch (const std::out_of_range& e)
         {
           gotKey1 = false;
           break;
         }
       }
             
-      else if (key == "key2") 
+      else if (key == "key2")
       {
         if (!std::regex_match(value, REGEXPATTERNKEY2))
         {
@@ -83,7 +83,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
           break;
         }
         if (value.size() < 7)
-        { 
+        {
           gotKey2 = false;
           break;
         }
@@ -100,20 +100,20 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
         gotKey2 = true;
       }
             
-      else if (key == "key3") 
+      else if (key == "key3")
       {
            
         if (!std::regex_match(value, REGEXPATTERNKEY3))
         {
           gotKey3 = false;
           break;
-        }      
+        }
         parsed.key3 = value.substr(1, value.size() - 2);
         gotKey3 = true;
         }
       }
 
-    if (gotKey1 && gotKey2 && gotKey3) 
+    if (gotKey1 && gotKey2 && gotKey3)
     {
       temp = parsed;
       isFound = true;
