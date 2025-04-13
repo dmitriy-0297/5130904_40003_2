@@ -25,14 +25,32 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
 
     std::string content = line.substr(1, line.size() - 2);
     std::vector<std::string> parts;
-    std::istringstream iss(content);
     std::string part;
-    while (std::getline(iss, part, ':'))
+    bool inQuotes = false;
+    for (size_t i = 0; i < content.size(); ++i)
     {
-      if (!part.empty())
+      char symbol = content[i];
+      if (symbol == '"')
       {
-        parts.push_back(part);
+        inQuotes = !inQuotes;
+        part += symbol;
       }
+      else if (symbol == ':' && !inQuotes)
+      {
+        if (!part.empty())
+        {
+          parts.push_back(part);
+          part.clear();
+        }
+      }
+      else
+      {
+        part += symbol;
+      }
+    }
+    if (!part.empty())
+    {
+      parts.push_back(part);
     }
 
     bool gotKey1 = false, gotKey2 = false, gotKey3 = false;
