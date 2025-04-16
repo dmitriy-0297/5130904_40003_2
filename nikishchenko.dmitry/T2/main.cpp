@@ -22,7 +22,7 @@ int main()
 
     if (dataVector.empty())
     {
-	std::cout << "Empty dataVector";
+        std::cout << "Empty dataVector";
     }
 
     std::sort(
