@@ -19,6 +19,12 @@ int main()
         std::back_inserter(dataVector)
     );
     cleanVector(dataVector);
+
+    if (dataVector.empty())
+    {
+	std::cout << "Empty dataVector";
+    }
+
     std::sort(
         dataVector.begin(),
         dataVector.end(),
