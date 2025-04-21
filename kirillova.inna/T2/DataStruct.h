@@ -15,7 +15,6 @@ namespace kirillova
 		unsigned long long key1;
 		unsigned long long key2;
 		std::string key3;
-
 		DataStruct() : key1(0), key2(0), key3("") {};
 	};
 
@@ -49,5 +48,4 @@ namespace kirillova
 	std::istream& operator>>(std::istream& in, String&& data);
 	std::ostream& operator<<(std::ostream& out, const DataStruct& data);
 }
-
 #endif

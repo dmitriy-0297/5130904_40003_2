@@ -8,7 +8,11 @@ int main()
     {
         std::vector<kirillova::DataStruct> vector;
 
-        std::copy(std::istream_iterator<kirillova::DataStruct>(std::cin), std::istream_iterator<kirillova::DataStruct>(), std::back_inserter(vector));
+	std::copy(
+	    std::istream_iterator<kirillova::DataStruct>(std::cin),
+	    std::istream_iterator<kirillova::DataStruct>(),
+	    std::back_inserter(vector)
+	);
 
         if (vector.empty())
         {
@@ -17,7 +21,11 @@ int main()
 
         std::sort(vector.begin(), vector.end(), kirillova::compareDataStructs);
 
-        std::copy(vector.begin(), vector.end(), std::ostream_iterator<kirillova::DataStruct>(std::cout, "\n"));
+	std::copy(
+	    vector.begin(),
+	    vector.end(),
+	    std::ostream_iterator<kirillova::DataStruct>(std::cout, "\n")
+	);
     }
     catch (const std::logic_error&)
     {
