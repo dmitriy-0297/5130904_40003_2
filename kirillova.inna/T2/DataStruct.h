@@ -10,42 +10,44 @@
 
 namespace kirillova
 {
-	struct DataStruct
-	{
-		unsigned long long key1;
-		unsigned long long key2;
-		std::string key3;
-		DataStruct() : key1(0), key2(0), key3("") {};
-	};
+  struct DataStruct
+  {
+    unsigned long long key1;
+    unsigned long long key2;
+    std::string key3;
 
-	bool compareDataStructs(const DataStruct& a, const DataStruct& b);
-	std::string changeKeyToBinary(unsigned long long key);
+    DataStruct() : key1(0), key2(0), key3("") {}
+  };
 
-	struct Delimiter
-	{
-		char value;
-	};
+  bool compareDataStructs(const DataStruct& a, const DataStruct& b);
+  std::string changeKeyToBinary(unsigned long long key);
 
-	struct UllLiteral
-	{
-		unsigned long long& value;
-	};
+  struct Delimiter
+  {
+    char value;
+  };
 
-	struct UllBinary
-	{
-		unsigned long long& value;
-	};
+  struct UllLiteral
+  {
+    unsigned long long& value;
+  };
 
-	struct String
-	{
-		std::string& value;
-	};
+  struct UllBinary
+  {
+    unsigned long long& value;
+  };
 
-	std::istream& operator>>(std::istream& in, DataStruct& data);
-	std::istream& operator>>(std::istream& in, Delimiter&& data);
-	std::istream& operator>>(std::istream& in, UllLiteral&& data);
-	std::istream& operator>>(std::istream& in, UllBinary&& data);
-	std::istream& operator>>(std::istream& in, String&& data);
-	std::ostream& operator<<(std::ostream& out, const DataStruct& data);
+  struct String
+  {
+    std::string& value;
+  };
+
+  std::istream& operator>>(std::istream& in, DataStruct& data);
+  std::istream& operator>>(std::istream& in, Delimiter&& data);
+  std::istream& operator>>(std::istream& in, UllLiteral&& data);
+  std::istream& operator>>(std::istream& in, UllBinary&& data);
+  std::istream& operator>>(std::istream& in, String&& data);
+  std::ostream& operator<<(std::ostream& out, const DataStruct& data);
 }
+
 #endif
