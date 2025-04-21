@@ -1,5 +1,4 @@
 #include "DataStruct.h"
-
 const std::string ERROR_OF_EMPTY_VECTOR = "ERROR: vector is empty, because you wrote incorrect keys!";
 
 int main()
