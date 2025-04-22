@@ -1,6 +1,12 @@
 ﻿#include "Data_struct.h"
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <iomanip>
 #include <algorithm>
 #include <vector>
+#include <regex>
 
 namespace artemonts {
     std::istream& operator>>(std::istream& in, StringIO&& val)
@@ -39,6 +45,7 @@ namespace artemonts {
     {
         char c;
 
+        // Бесконечный цикл: ищем первую скобку '(' или выходим по EOF
         while (true) {
             in >> std::ws;
             if (!in || in.peek() == EOF) {
@@ -52,6 +59,7 @@ namespace artemonts {
         DataStruct tmp;
         bool valid = true;
 
+        // Пытаемся распарсить запись целиком
         if (!(in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' })) valid = false;
 
         for (int i = 0; i < 3 && valid; ++i) {
@@ -73,16 +81,21 @@ namespace artemonts {
             }
         }
 
+        // Должны встретить ')'
         if (!(in >> DelimiterIO{ ')' })) valid = false;
 
         if (valid) {
+            // Всё хорошо — выдаём пользователю
             value = tmp;
             return in;
         }
 
+        // Что‑то пошло не так — очищаем флаг ошибки,
+        // пропускаем оставшуюся кусок до ')' и пробуем снова:
         in.clear(in.rdstate() & ~std::ios::failbit);
         while (in.get(c) && c != ')') { /* пропускаем */ }
 
+        // Рекурсивно читаем следующую запись (или уйдём в EOF)
         return operator>>(in, value);
     }
 
