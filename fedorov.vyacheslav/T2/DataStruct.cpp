@@ -1,13 +1,10 @@
 #include "DataStruct.h"
 #include <regex>
-
 bool parseRecord(const std::string& line, DataStruct& data) {
   std::regex key1_re(":key1\\s+([-+]?[0-9]+)(?:ll|LL|ull)?:");
   std::regex key2_re(":key2\\s+\\(\\s*:N\\s+([-+]?[0-9]+):D\\s+([0-9]+):\\s*\\):");
   std::regex key3_re(":key3\\s+\"([^\"]*)\":");
-
   std::smatch match;
-
   if (!std::regex_search(line, match, key1_re)) {
     return false;
   }

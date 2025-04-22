@@ -9,7 +9,6 @@
 int main() {
   std::vector<DataStruct> vector;
   std::string line;
-
   while (std::getline(std::cin, line)) {
     if (line.empty()) continue;
 
@@ -19,9 +18,7 @@ int main() {
       vector.push_back(data);
     }
   }
-
   std::sort(vector.begin(), vector.end(), cusComparator);
-
   std::copy(vector.begin(),
     vector.end(),
     std::ostream_iterator<DataStruct>(std::cout, "\n"));
