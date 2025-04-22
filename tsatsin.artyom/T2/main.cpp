@@ -1,5 +1,8 @@
+#include <iostream>
 #include <vector>
+#include <iterator>
 #include <algorithm>
+#include <limits>
 
 #include "Data_struct.h"
 
