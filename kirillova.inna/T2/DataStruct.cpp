@@ -76,12 +76,7 @@ std::istream& kirillova::operator>>(std::istream& in, UllLiteral&& data)
         return in;
     }
 
-    if (!(in >> data.value >> Delimiter{ 'u' } >> Delimiter{ 'l' } >> Delimiter{ 'l' } >> Delimiter{ ':' }))
-    {
-        in.setstate(std::ios::failbit);
-    }
-
-    return in;
+    return in >> data.value >> Delimiter{ 'u' } >> Delimiter{ 'l' } >> Delimiter{ 'l' } >> Delimiter{ ':' };
 }
 
 std::istream& kirillova::operator>>(std::istream& in, UllBinary&& data)
@@ -154,84 +149,39 @@ std::istream& kirillova::operator>>(std::istream& in, DataStruct& data)
         return in;
     }
 
-    DataStruct temp{};
-    char nextChar;
-    bool isError = false;
+    DataStruct temp;
+    
+    in >> Delimiter{ '(' } >> Delimiter{ ':' };
 
-    while (in.get(nextChar) && nextChar != '(') {}
-    if (nextChar != '(')
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-    in.unget();
-
-    if (!(in >> Delimiter{ '(' } >> Delimiter{ ':' }))
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < 3; i++)
     {
         std::string key;
-        if (!(in >> key))
-        {
-            isError = true;
-            break;
-        }
-
+        in >> key;
         if (key == "key1")
         {
-            if (!(in >> UllLiteral{ temp.key1 }))
-            {
-                isError = true;
-                break;
-            }
+            in >> UllLiteral{ temp.key1 };
         }
         else if (key == "key2")
         {
-            if (!(in >> UllBinary{ temp.key2 }))
-            {
-                isError = true;
-                break;
-            }
+            in >> UllBinary{ temp.key2 };
         }
         else if (key == "key3")
         {
-            if (!(in >> String{ temp.key3 }))
-            {
-                isError = true;
-                break;
-            }
+            in >> String{ temp.key3 };
         }
         else
         {
-            isError = true;
-            break;
+            in.setstate(std::ios::failbit);
+            return in;
         }
     }
 
-    if (!isError && !(in >> Delimiter{ ')' }))
-    {
-        isError = true;
-    }
+    in >> Delimiter{ ')' };
 
-    if (!isError)
+    if (in)
     {
         data = temp;
     }
-    else
-    {
-        in.setstate(std::ios::failbit);
-    }
-
-    if (in.fail())
-    {
-        in.clear();
-        in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
     return in;
 }
 
