@@ -232,6 +232,6 @@ namespace artemonts {
         if (exp >= 0) {
             result += '+';
         }
-        return result + std::to_string(exp); 
+        return result + std::to_string(exp);
     }
 }
