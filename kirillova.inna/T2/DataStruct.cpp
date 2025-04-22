@@ -19,18 +19,30 @@ bool kirillova::compareDataStructs(const kirillova::DataStruct& a, const kirillo
 std::string kirillova::changeKeyToBinary(unsigned long long key)
 {
     std::string result;
+
     if (key == 0)
     {
-        return "0";
+        return "0b0";
     };
 
-    while (key > 0)
+    for (int i = 63; i >= 0; --i)
     {
-        result.insert(result.begin(), (key % 2) ? '1' : '0');
-        key /= 2;
+        result += ((key >> i) & 1) ? '1' : '0';
     }
 
-    return result;
+    size_t firstIndex = result.find('1');
+    if (firstIndex == std::string::npos)
+    {
+        return "0b0";
+    }
+
+    result = result.substr(firstIndex);
+
+    if (result.length() == 1)
+    {
+        result = "0" + result;
+    }
+    return "0b" + result;
 }
 
 std::istream& kirillova::operator>>(std::istream& in, Delimiter&& data)
@@ -39,6 +51,7 @@ std::istream& kirillova::operator>>(std::istream& in, Delimiter&& data)
 
     if (!sentry)
     {
+
         return in;
     }
 
@@ -63,7 +76,12 @@ std::istream& kirillova::operator>>(std::istream& in, UllLiteral&& data)
         return in;
     }
 
-    return in >> data.value >> Delimiter{ 'u' } >> Delimiter{ 'l' } >> Delimiter{ 'l' } >> Delimiter{ ':' };
+    if (!(in >> data.value >> Delimiter{ 'u' } >> Delimiter{ 'l' } >> Delimiter{ 'l' } >> Delimiter{ ':' }))
+    {
+        in.setstate(std::ios::failbit);
+    }
+
+    return in;
 }
 
 std::istream& kirillova::operator>>(std::istream& in, UllBinary&& data)
@@ -118,6 +136,11 @@ std::istream& kirillova::operator>>(std::istream& in, String&& data)
     }
 
     std::getline(in >> Delimiter{ '"' }, data.value, '"');
+    if (in.fail())
+    {
+        in.setstate(std::ios::failbit);
+    }
+
     in >> Delimiter{ ':' };
 
     return in;
@@ -131,39 +154,82 @@ std::istream& kirillova::operator>>(std::istream& in, DataStruct& data)
         return in;
     }
 
-    DataStruct temp;
+    DataStruct temp{};
+    char nextChar;
+    bool isError = false;
 
-    in >> Delimiter{ '(' } >> Delimiter{ ':' };
+    while (in.get(nextChar) && nextChar != '(') {}
+    if (nextChar != '(')
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    in.unget();
 
-    for (size_t i = 0; i < 3; i++)
+    if (!(in >> Delimiter{ '(' } >> Delimiter{ ':' }))
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+
+    for (size_t i = 0; i < 3; ++i)
     {
         std::string key;
-        in >> key;
+        if (!(in >> key))
+        {
+            isError = true;
+            break;
+        }
 
         if (key == "key1")
         {
-            in >> UllLiteral{ temp.key1 };
+            if (!(in >> UllLiteral{ temp.key1 }))
+            {
+                isError = true;
+                break;
+            }
         }
         else if (key == "key2")
         {
-            in >> UllBinary{ temp.key2 };
+            if (!(in >> UllBinary{ temp.key2 }))
+            {
+                isError = true;
+                break;
+            }
         }
         else if (key == "key3")
         {
-            in >> String{ temp.key3 };
+            if (!(in >> String{ temp.key3 }))
+            {
+                isError = true;
+                break;
+            }
         }
         else
         {
-            in.setstate(std::ios::failbit);
-            return in;
+            isError = true;
+            break;
         }
     }
 
-    in >> Delimiter{ ')' };
+    if (!isError && !(in >> Delimiter{ ')' }))
+    {
+        isError = true;
+    }
 
-    if (in)
+    if (!isError)
     {
         data = temp;
+    }
+    else
+    {
+        in.setstate(std::ios::failbit);
+    }
+
+    if (in.fail())
+    {
+        in.clear();
+        in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     return in;
@@ -171,6 +237,6 @@ std::istream& kirillova::operator>>(std::istream& in, DataStruct& data)
 
 std::ostream& kirillova::operator<<(std::ostream& out, const kirillova::DataStruct& data)
 {
-    out << "(:key1 " << data.key1 << "ull:" << "key2 0b" << changeKeyToBinary(data.key2) << ":" << "key3 \"" << data.key3 << "\":)";
+    out << "(:key1 " << data.key1 << "ull:" << "key2 " << changeKeyToBinary(data.key2) << ":" << "key3 \"" << data.key3 << "\":)";
     return out;
 }
