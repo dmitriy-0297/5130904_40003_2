@@ -146,7 +146,6 @@ namespace artemonts {
         {
             return in;
         }
-        int num = 0;
         int mantissa = 0;
         int number = 0;
         int power = 0;
