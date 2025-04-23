@@ -1,10 +1,7 @@
 #include "fmt_guard.hpp"
 
-IOFmtGuard::IOFmtGuard(std::basic_ios<char> &s) : stream_(s),
-                                                  width_(s.width()),
-                                                  fill_(s.fill()),
-                                                  precision_(s.precision()),
-                                                  fmt_(s.flags()) {
+IOFmtGuard::IOFmtGuard(std::basic_ios<char> &s) : stream_(s), width_(s.width()), fill_(s.fill()),
+                                                  precision_(s.precision()), fmt_(s.flags()) {
 }
 
 IOFmtGuard::~IOFmtGuard() {
@@ -13,3 +10,4 @@ IOFmtGuard::~IOFmtGuard() {
     stream_.precision(precision_);
     stream_.flags(fmt_);
 }
+

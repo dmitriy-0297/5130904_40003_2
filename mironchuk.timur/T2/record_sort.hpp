@@ -5,3 +5,4 @@
 bool compareRecords(const DataStruct &a, const DataStruct &b);
 
 #endif // RECORD_SORT_HPP
+

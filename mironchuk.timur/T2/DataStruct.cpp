@@ -58,23 +58,23 @@ namespace {
         return false;
     }
 
-std::istream &operator>>(std::istream &in, DataStruct &value) {
-    std::string line;
-    while (std::getline(in, line)) {
-        line = trim(line);
-        if (line.empty()) continue;
-        if (parseLine(line, value)) return in;
+    std::istream &operator>>(std::istream &in, DataStruct &value) {
+        std::string line;
+        while (std::getline(in, line)) {
+            line = trim(line);
+            if (line.empty()) continue;
+            if (parseLine(line, value)) return in;
+        }
+        in.setstate(std::ios::failbit);
+        return in;
     }
-    in.setstate(std::ios::failbit);
-    return in;
-}
 
-std::ostream &operator<<(std::ostream &out, const DataStruct &v) {
-    IOFmtGuard g(out);
-    out << "(:key1 0" << std::oct << v.key1 << std::dec;
-    out << ":key2 #c(" << std::fixed << std::setprecision(1)
-            << v.key2.real() << ' ' << v.key2.imag() << ')';
-    out << ":key3 \"" << v.key3 << "\":)";
-    return out;
-}
+    std::ostream &operator<<(std::ostream &out, const DataStruct &v) {
+        IOFmtGuard g(out);
+        out << "(:key1 0" << std::oct << v.key1 << std::dec;
+        out << ":key2 #c(" << std::fixed << std::setprecision(1)
+                << v.key2.real() << ' ' << v.key2.imag() << ')';
+        out << ":key3 \"" << v.key3 << "\":)";
+        return out;
+    }
 

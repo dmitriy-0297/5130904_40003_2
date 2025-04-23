@@ -18,3 +18,4 @@ private:
 };
 
 #endif // FMT_GUARD_HPP
+
