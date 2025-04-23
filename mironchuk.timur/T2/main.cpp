@@ -4,7 +4,7 @@
 #include "DataStruct.h"
 
 static const std::string EMPTY_MSG =
-    "Looks like there is no supported record. Cannot determine input. Test skipped";
+        "Looks like there is no supported record. Cannot determine input. Test skipped";
 static const std::string ONE_MSG = "Atleast one supported record type";
 
 int main() {

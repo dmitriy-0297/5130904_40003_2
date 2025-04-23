@@ -13,15 +13,16 @@ struct DataStruct {
     std::string key3;
 };
 
-std::istream &operator>>(std::istream &in, DataStruct &data);
+std::istream &operator>>(std::istream &in, DataStruct &value);
 
-std::ostream &operator<<(std::ostream &out, const DataStruct &data);
-
-void printData(const std::vector<DataStruct> &data, std::ostream &out);
+std::ostream &operator<<(std::ostream &out, const DataStruct &value);
 
 std::vector<DataStruct> parseData(std::istream &in);
 
-void sortData(std::vector<DataStruct> &data);
+void sortData(std::vector<DataStruct> &v);
+
+void printData(const std::vector<DataStruct> &v,
+               std::ostream &out);
 
 #endif // DATASTRUCT_H
 
