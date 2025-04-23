@@ -1,101 +1,104 @@
 #include "DataStruct.h"
+#include <algorithm>
+#include <sstream>
 #include <cctype>
-#include <limits>
+#include <cmath>
 
-bool compareDataStructs(const DataStruct &a, const DataStruct &b) {
-    if (a.key1 != b.key1) return a.key1 < b.key1;
-    double magA = std::abs(a.key2), magB = std::abs(b.key2);
-    if (magA != magB) return magA < magB;
-    return a.key3.size() < b.key3.size();
+static std::string trim(const std::string &s) {
+    auto b = std::find_if_not(s.begin(), s.end(), ::isspace);
+    auto e = std::find_if_not(s.rbegin(), s.rend(), ::isspace).base();
+    return (b < e) ? std::string(b, e) : std::string();
 }
 
-std::istream &operator>>(std::istream &in, Delimiter &&data) {
-    std::istream::sentry sentry(in);
-    if (!sentry) return in;
+static bool parseLine(const std::string &line, DataStruct &out) {
+    if (line.size() < 4 || line.front() != '(' || line.back() != ')') return false;
 
-    char c = '0';
-    in >> c;
-    if (in && (std::tolower(c) != std::tolower(data.value))) {
-        in.setstate(std::ios::failbit);
-    }
-    return in;
-}
+    DataStruct ds{};
+    bool k1 = false, k2 = false, k3 = false;
 
-std::istream &operator>>(std::istream &in, UllOct &&data) {
-    std::istream::sentry sentry(in);
-    if (!sentry) return in;
+    std::string content = line.substr(1, line.size() - 2);
+    size_t pos = 0;
+    while (pos < content.size()) {
+        size_t colon = content.find(':', pos);
+        if (colon == std::string::npos) break;
+        std::string field = content.substr(pos, colon - pos);
+        pos = colon + 1;
 
-    std::string numStr;
-    in >> numStr;
-
-    try {
-        if (numStr.empty() || numStr[0] != '0' ||
-            numStr.find_first_not_of("01234567") != std::string::npos) {
-            in.setstate(std::ios::failbit);
-            return in;
+        if (!k1 && field.rfind("key1 ", 0) == 0) {
+            std::string v = field.substr(5);
+            if (v.size() > 1 && v[0] == '0' && v.find_first_not_of("01234567") == std::string::npos) {
+                ds.key1 = std::stoull(v, nullptr, 8);
+                k1 = true;
+            }
+        } else if (!k2 && field.rfind("key2 #c(", 0) == 0) {
+            size_t end = content.find(')', pos);
+            if (end != std::string::npos) {
+                std::istringstream iss(content.substr(pos, end - pos));
+                double re, im;
+                if (iss >> re >> im) {
+                    ds.key2 = {re, im};
+                    k2 = true;
+                }
+                pos = end + 1;
+            }
+        } else if (!k3 && field.rfind("key3 \"", 0) == 0) {
+            size_t end = content.find('"', pos);
+            if (end != std::string::npos) {
+                ds.key3 = content.substr(pos, end - pos);
+                k3 = true;
+                pos = end + 1;
+            }
         }
-        data.value = std::stoull(numStr, nullptr, 8);
-    } catch (...) {
-        in.setstate(std::ios::failbit);
     }
-    return in;
-}
-
-std::istream &operator>>(std::istream &in, ComplexNum &&data) {
-    std::istream::sentry sentry(in);
-    if (!sentry) return in;
-
-    in >> Delimiter{'#'} >> Delimiter{'c'} >> Delimiter{'('};
-    double real, imag;
-    in >> real >> imag >> Delimiter{')'} >> Delimiter{':'};
-
-    if (in) {
-        data.value = std::complex<double>(real, imag);
+    if (k1 && k2 && k3) {
+        out = ds;
+        return true;
     }
-    return in;
-}
-
-std::istream &operator>>(std::istream &in, String &&data) {
-    std::istream::sentry sentry(in);
-    if (!sentry) return in;
-
-    std::getline(in >> Delimiter{'"'}, data.value, '"');
-    if (in.fail()) in.setstate(std::ios::failbit);
-    in >> Delimiter{':'};
-    return in;
+    return false;
 }
 
 std::istream &operator>>(std::istream &in, DataStruct &data) {
-    std::istream::sentry sentry(in);
-    if (!sentry) return in;
-
-    DataStruct temp;
-    in >> Delimiter{'('} >> Delimiter{':'};
-
-    for (size_t i = 0; i < 3; ++i) {
-        std::string key;
-        in >> key;
-        if (key == "key1") {
-            in >> UllOct{temp.key1};
-        } else if (key == "key2") {
-            in >> ComplexNum{temp.key2};
-        } else if (key == "key3") {
-            in >> String{temp.key3};
-        } else {
-            in.setstate(std::ios::failbit);
-            return in;
-        }
+    std::string raw;
+    while (std::getline(in, raw)) {
+        raw = trim(raw);
+        if (raw.empty()) continue;
+        if (parseLine(raw, data)) return in;
     }
-
-    in >> Delimiter{')'};
-    if (in) data = temp;
+    in.setstate(std::ios::failbit);
     return in;
 }
 
 std::ostream &operator<<(std::ostream &out, const DataStruct &data) {
-    out << "(:key1 0" << std::oct << data.key1 << std::dec
-            << ":key2 #c(" << data.key2.real() << " " << data.key2.imag() << ")"
+    out << "(:key1 " << std::oct << data.key1 << std::dec
+            << ":key2 #c(" << data.key2.real() << ' ' << data.key2.imag() << ")"
             << ":key3 \"" << data.key3 << "\":)";
     return out;
+}
+
+static bool compare(const DataStruct &a, const DataStruct &b) {
+    if (a.key1 != b.key1) return a.key1 < b.key1;
+    double ma = std::abs(a.key2), mb = std::abs(b.key2);
+    if (ma != mb) return ma < mb;
+    return a.key3.size() < b.key3.size();
+}
+
+void sortData(std::vector<DataStruct> &data) {
+    std::sort(data.begin(), data.end(), compare);
+}
+
+std::vector<DataStruct> parseData(std::istream &in) {
+    std::vector<DataStruct> v;
+    std::string line;
+    while (std::getline(in, line)) {
+        line = trim(line);
+        if (line.empty()) continue;
+        DataStruct ds;
+        if (parseLine(line, ds)) v.push_back(ds);
+    }
+    return v;
+}
+
+void printData(const std::vector<DataStruct> &data, std::ostream &out) {
+    for (const auto &d: data) out << d << '\n';
 }
 
