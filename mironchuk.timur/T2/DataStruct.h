@@ -13,9 +13,9 @@ struct DataStruct {
     std::string key3;
 };
 
-std::istream &operator>>(std::istream &in, DataStruct &value);
+std::istream &operator>>(std::istream &in, DataStruct &record);
 
-std::ostream &operator<<(std::ostream &out, const DataStruct &value);
+std::ostream &operator<<(std::ostream &out, const DataStruct &record);
 
 std::vector<DataStruct> parseData(std::istream &in);
 

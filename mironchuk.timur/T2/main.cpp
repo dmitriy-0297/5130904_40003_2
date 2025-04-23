@@ -1,31 +1,29 @@
 #include <iostream>
-#include <iterator>
-#include <limits>
 #include "DataStruct.h"
 
-static const std::string EMPTY_MSG =
+static constexpr const char *MSG_EMPTY =
         "Looks like there is no supported record. Cannot determine input. Test skipped";
-static const std::string ONE_MSG = "Atleast one supported record type";
+static constexpr const char *MSG_ONE = "Atleast one supported record type";
 
 int main() {
     if (std::cin.peek() == EOF) {
-        std::cout << EMPTY_MSG << '\n';
+        std::cout << MSG_EMPTY << '\n';
         return 0;
     }
 
-    auto data = parseData(std::cin);
+    auto records = parseData(std::cin);
 
-    if (data.empty()) {
-        std::cout << EMPTY_MSG << '\n';
+    if (records.empty()) {
+        std::cout << MSG_EMPTY << '\n';
         return 0;
     }
-    if (data.size() == 1) {
-        std::cout << ONE_MSG << '\n';
+    if (records.size() == 1) {
+        std::cout << MSG_ONE << '\n';
         return 0;
     }
 
-    sortData(data);
-    printData(data, std::cout);
+    sortData(records);
+    printData(records, std::cout);
     return 0;
 }
 
