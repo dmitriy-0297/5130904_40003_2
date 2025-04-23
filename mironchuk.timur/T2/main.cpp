@@ -4,12 +4,12 @@
 int main() {
     auto data = parseData(std::cin);
 
-    if (total_lines_read == 0) {
+    if (data.empty()) {
         std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped";
         return 0;
     }
 
-    if (valid_records_count == 0) {
+    if (data.size() == 1 && data[0].key3.empty()) {
         std::cout << "Atleast one supported record type";
         return 0;
     }
