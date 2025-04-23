@@ -15,6 +15,7 @@ struct DataStruct {
 };
 
 extern std::size_t total_lines_read;
+extern std::size_t valid_records_count;
 
 std::vector<DataStruct> parseData(std::istream &in);
 

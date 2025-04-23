@@ -9,7 +9,12 @@ int main() {
         return 0;
     }
 
-    if (data.size() < 2) {
+    if (valid_records_count == 0) {
+        std::cout << "Atleast one supported record type";
+        return 0;
+    }
+
+    if (data.size() == 1) {
         std::cout << "Atleast one supported record type";
         return 0;
     }
@@ -18,4 +23,5 @@ int main() {
     printData(data, std::cout);
     return 0;
 }
+
 

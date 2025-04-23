@@ -2,10 +2,12 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <cmath>
 #include <sstream>
 #include <cctype>
 
 std::size_t total_lines_read = 0;
+std::size_t valid_records_count = 0;
 
 static bool compareData(const DataStruct &a, const DataStruct &b) {
     if (a.key1 != b.key1) return a.key1 < b.key1;
@@ -18,6 +20,7 @@ std::vector<DataStruct> parseData(std::istream &in) {
     std::vector<DataStruct> data;
     std::string line;
     total_lines_read = 0;
+    valid_records_count = 0;
 
     while (std::getline(in, line)) {
         ++total_lines_read;
@@ -31,7 +34,6 @@ std::vector<DataStruct> parseData(std::istream &in) {
         }
 
         std::string content = line.substr(1, line.size() - 2);
-
         DataStruct ds;
         bool hasKey1 = false, hasKey2 = false, hasKey3 = false;
 
@@ -70,12 +72,12 @@ std::vector<DataStruct> parseData(std::istream &in) {
                     }
                 }
             }
-
             start = end + 1;
         }
 
         if (hasKey1 && hasKey2 && hasKey3) {
             data.push_back(ds);
+            ++valid_records_count;
         }
     }
     return data;
