@@ -25,3 +25,4 @@ void printData(const std::vector<DataStruct>& data, std::ostream& out);
 std::ostream& operator<<(std::ostream& out, const DataStruct& ds);
 
 #endif // DATASTRUCT_H
+
