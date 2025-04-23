@@ -26,3 +26,4 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& ds);
 
 #endif // DATASTRUCT_H
 
+

@@ -7,7 +7,7 @@ int main() {
         std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped";
         return 0;
     }
-    if (data.empty()) {
+    if (data.size() < 2) {
         std::cout << "Atleast one supported record type";
         return 0;
     }

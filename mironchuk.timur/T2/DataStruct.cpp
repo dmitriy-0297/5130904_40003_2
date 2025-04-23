@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <cmath>
 
-// Определение глобального счётчика строк
 std::size_t total_lines_read = 0;
 
 static bool compareData(const DataStruct& a, const DataStruct& b) {
@@ -26,7 +25,6 @@ std::vector<DataStruct> parseData(std::istream& in) {
             if (line.size() < 4 || line.substr(0, 2) != "(:" || line.substr(line.size() - 2) != ":)")
                 throw std::runtime_error("Invalid boundaries");
 
-            // key1 — восьмеричный ULL
             auto p1 = line.find(":key1 ");
             if (p1 == std::string::npos) throw std::runtime_error("No key1");
             p1 += 6;
@@ -36,7 +34,6 @@ std::vector<DataStruct> parseData(std::istream& in) {
                 throw std::runtime_error("Invalid key1 format");
             unsigned long long key1 = std::stoull(s1, nullptr, 8);
 
-            // key2 — Lisp‑подобный комплекс
             auto p2 = line.find(":key2 #c(", e1);
             if (p2 == std::string::npos) throw std::runtime_error("No key2");
             p2 += 10;
@@ -47,7 +44,6 @@ std::vector<DataStruct> parseData(std::istream& in) {
             double imag = std::stod(s2.substr(sp + 1));
             std::complex<double> key2(real, imag);
 
-            // key3 — строка
             auto p3 = line.find(":key3 \"", e2);
             if (p3 == std::string::npos) throw std::runtime_error("No key3");
             p3 += 7;
@@ -60,7 +56,6 @@ std::vector<DataStruct> parseData(std::istream& in) {
             throw;
         }
         catch (...) {
-            // игнорируем некорректную строку
             continue;
         }
     }
@@ -82,3 +77,4 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& ds) {
     out << ":key3 \"" << ds.key3 << "\":)";
     return out;
 }
+
