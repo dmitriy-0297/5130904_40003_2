@@ -2,18 +2,16 @@
 #include "DataStruct.h"
 
 int main() {
-    try {
-        auto data = parseData(std::cin);
-        sortData(data);
-        printData(data, std::cout);
+    auto data = parseData(std::cin);
+    if (total_lines_read == 0) {
+        std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped";
+        return 0;
     }
-    catch (const std::bad_alloc& e) {
-        std::cerr << "Memory allocation failed\n";
-        return 1;
+    if (data.empty()) {
+        std::cout << "Atleast one supported record type";
+        return 0;
     }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 2;
-    }
+    sortData(data);
+    printData(data, std::cout);
     return 0;
 }
