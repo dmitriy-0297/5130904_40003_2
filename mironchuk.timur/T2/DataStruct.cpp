@@ -22,12 +22,16 @@ std::vector<DataStruct> parseData(std::istream &in) {
     total_lines_read = 0;
     valid_records_count = 0;
 
+    bool has_input = false;
     while (std::getline(in, line)) {
+        has_input = true;
         ++total_lines_read;
 
         line.erase(line.begin(), std::find_if(line.begin(), line.end(), [](int ch) { return !std::isspace(ch); }));
         line.erase(std::find_if(line.rbegin(), line.rend(), [](int ch) { return !std::isspace(ch); }).base(),
                    line.end());
+
+        if (line.empty()) continue;
 
         if (line.size() < 4 || line.front() != '(' || line.back() != ')') {
             continue;
@@ -80,6 +84,12 @@ std::vector<DataStruct> parseData(std::istream &in) {
             ++valid_records_count;
         }
     }
+
+    // Если был ввод, но не было ни одной валидной строки
+    if (has_input && valid_records_count == 0) {
+        data.clear();
+    }
+
     return data;
 }
 
