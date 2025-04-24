@@ -1,4 +1,10 @@
 #include "Figures.h"
+
+#include <algorithm>
+#include <climits>
+#include <limits>
+#include <numeric>
+
 namespace artttnik
 {
 
@@ -86,7 +92,9 @@ Frame getBoundingFrameRecursive(const std::vector<Polygon>& polygons, size_t pol
 {
   if (poly_index == polygons.size())
   {
-    return Frame{{INT_MAX, INT_MAX}, {INT_MIN, INT_MIN}};  // Только в базовом случае
+    const int max = std::numeric_limits<size_t>::max();
+    const int min = std::numeric_limits<size_t>::min();
+    return Frame{{max, max}, {min, min}};
   }
 
   Frame next_frame = getBoundingFrameRecursive(polygons, poly_index + 1);

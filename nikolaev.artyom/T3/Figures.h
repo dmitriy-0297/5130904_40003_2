@@ -1,9 +1,7 @@
 #ifndef FIGURES_H
 #define FIGURES_H
 
-#include <algorithm>
 #include <cmath>
-#include <numeric>
 #include <vector>
 
 namespace artttnik

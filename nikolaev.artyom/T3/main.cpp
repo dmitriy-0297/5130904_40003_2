@@ -1,5 +1,5 @@
 #include "IO.h"
-#include "commands.h"
+#include "Commands.h"
 #include <iostream>
 
 using namespace artttnik;
