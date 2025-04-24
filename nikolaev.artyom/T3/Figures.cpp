@@ -92,8 +92,8 @@ Frame getBoundingFrameRecursive(const std::vector<Polygon>& polygons, size_t pol
 {
   if (poly_index == polygons.size())
   {
-    const int max = std::numeric_limits<size_t>::max();
-    const int min = std::numeric_limits<size_t>::min();
+    const int max = std::numeric_limits<int>::max();
+    const int min = std::numeric_limits<int>::min();
     return Frame{{max, max}, {min, min}};
   }
 
