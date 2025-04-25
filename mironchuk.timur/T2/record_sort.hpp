@@ -4,5 +4,5 @@
 
 bool compare(const DataStruct &ds1, const DataStruct &ds2);
 
-#endif RECORD_SORT_HPP
+#endif
 
