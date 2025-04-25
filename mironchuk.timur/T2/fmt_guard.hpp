@@ -1,21 +1,19 @@
 #ifndef FMT_GUARD_HPP
 #define FMT_GUARD_HPP
 
-#include <ios>
+#include <iomanip>
 
-class IOFmtGuard {
+class iofmtguard
+{
 public:
-    explicit IOFmtGuard(std::basic_ios<char> &stream);
-
-    ~IOFmtGuard();
-
+    iofmtguard(std::basic_ios< char >& s);
+    ~iofmtguard();
 private:
-    std::basic_ios<char> &stream_;
-    std::streamsize width_;
+    std::basic_ios< char >& s_;
     char fill_;
+    std::streamsize width_;
     std::streamsize precision_;
-    std::ios::fmtflags fmt_;
+    std::basic_ios< char >::fmtflags fmt_;
 };
 
-#endif // FMT_GUARD_HPP
-
+#endif

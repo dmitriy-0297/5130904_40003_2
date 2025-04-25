@@ -2,7 +2,7 @@
 #define RECORD_SORT_HPP
 #include "DataStruct.hpp"
 
-bool compareRecords(const DataStruct &a, const DataStruct &b);
+bool compare(const DataStruct& ds1, const DataStruct& ds2);
 
-#endif // RECORD_SORT_HPP
+#endif RECORD_SORT_HPP
 
