@@ -3,17 +3,19 @@
 
 #include <iomanip>
 
-class iofmtguard
-{
+class iofmtguard {
 public:
-    iofmtguard(std::basic_ios< char >& s);
+    iofmtguard(std::basic_ios<char> &s);
+
     ~iofmtguard();
+
 private:
-    std::basic_ios< char >& s_;
+    std::basic_ios<char> &s_;
     char fill_;
     std::streamsize width_;
     std::streamsize precision_;
-    std::basic_ios< char >::fmtflags fmt_;
+    std::basic_ios<char>::fmtflags fmt_;
 };
 
 #endif
+
