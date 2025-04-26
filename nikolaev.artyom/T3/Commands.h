@@ -1,40 +1,31 @@
-#ifndef COMMANDS_AREA_H
-#define COMMANDS_AREA_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
+
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <numeric>
+#include <regex>
+#include <string>
+#include <vector>
 
 #include "Figures.h"
-
-#include <string>
+#include "IO.h"
 
 namespace artttnik
 {
-struct VertexParity
-{
-  bool even_;
-  explicit VertexParity(bool even);
 
-  bool operator()(const Polygon &poly) const;
-};
-
-struct VertexCount
-{
-  std::size_t count_;
-  explicit VertexCount(std::size_t count);
-
-  bool operator()(const Polygon &poly) const;
-};
-
-void handleAreaCommand(const std::vector<Polygon> &polygons, const std::string &arg);
-void handleMaxCommand(const std::vector<Polygon> &polygons, const std::string &arg);
-void handleMinCommand(const std::vector<Polygon> &polygons, const std::string &arg);
-void handleCountCommand(const std::vector<Polygon> &polygons, const std::string &arg);
-bool readPoints(size_t remaining, std::vector<Point> &points);
-void removeDuplicates(std::vector<Polygon> &polygons, const Polygon &target, size_t &removed_count);
-
-void handleInframeCommand(const std::vector<Polygon> &polygons);
-void handleRmechoCommand(std::vector<Polygon> &polygons);
-
-void processCommands(std::vector<Polygon> &polygons);
+void processArea(const std::vector<Polygon> &polygons, const std::string &arg);
+void processMax(const std::vector<Polygon> &polygons, const std::string &arg);
+void processMin(const std::vector<Polygon> &polygons, const std::string &arg);
+void processCount(const std::vector<Polygon> &polygons, const std::string &arg);
+void processInframe(std::istream &input, const std::vector<Polygon> &polygons);
+void processRmecho(std::istream &input, std::vector<Polygon> &polygons);
+void chooseCommand(const std::string &command, std::vector<Polygon> &polygons,
+  std::istream &input, const std::string &arg = "");
+void processCommands(std::vector<Polygon>& polygons);
 
 }
 
-#endif // COMMANDS_AREA_H
+#endif

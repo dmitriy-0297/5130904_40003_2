@@ -5,20 +5,23 @@
 #include <limits>
 #include <numeric>
 
-namespace artttnik
-{
-
-bool Point::operator==(const Point &other) const
+bool artttnik::Point::operator==(const Point &other) const
 {
   return x_ == other.x_ && y_ == other.y_;
 }
 
-bool Point::operator<(const Point &other) const
+bool artttnik::Point::operator<(const Point &other) const
 {
   return x_ < other.x_ || (x_ == other.x_ && y_ < other.y_);
 }
 
-bool Polygon::operator==(const Polygon &other) const
+artttnik::Point::Point(const int x, const int y)
+{
+  x_ = x;
+  y_ = y;
+}
+
+bool artttnik::Polygon::operator==(const Polygon &other) const
 {
   if (points_.size() != other.points_.size())
     return false;
@@ -31,19 +34,22 @@ bool Polygon::operator==(const Polygon &other) const
   return std::equal(thisSorted.begin(), thisSorted.end(), otherSorted.begin());
 }
 
-bool Frame::contains(const Point &point) const
+artttnik::Polygon::Polygon(const std::vector<Point> &points) : points_(points)
+{}
+
+bool artttnik::Frame::contains(const Point &point) const
 {
   return point.x_ >= minL_.x_ && point.x_ <= maxR_.x_ && point.y_ >= minL_.y_ &&
          point.y_ <= maxR_.y_;
 }
 
-bool Frame::contains(const Polygon &poly) const
+bool artttnik::Frame::contains(const Polygon &poly) const
 {
   return std::all_of(poly.points_.begin(), poly.points_.end(),
                      [this](const Point &p) { return contains(p); });
 }
 
-double calculateArea(const Polygon &poly)
+double artttnik::calculateArea(const Polygon &poly)
 {
   auto area = [](double sum, const std::pair<Point, Point> &edge) {
     const Point &i = edge.first;
@@ -64,7 +70,7 @@ double calculateArea(const Polygon &poly)
   return std::abs(std::accumulate(edges.begin(), edges.end(), 0.0, area)) / 2.0;
 }
 
-bool checkPointsInFrame(const std::vector<Point> &points, const Frame &frame, size_t index)
+bool artttnik::checkPointsInFrame(const std::vector<Point> &points, const Frame &frame, size_t index)
 {
   if (index >= points.size())
     return true;
@@ -73,7 +79,7 @@ bool checkPointsInFrame(const std::vector<Point> &points, const Frame &frame, si
   return checkPointsInFrame(points, frame, index + 1);
 }
 
-Frame updateFrameWithPolygon(const Polygon &poly, const Frame &current, size_t point_index)
+artttnik::Frame artttnik::updateFrameWithPolygon(const Polygon &poly, const Frame &current, size_t point_index)
 {
   if (point_index >= poly.points_.size())
   {
@@ -88,7 +94,7 @@ Frame updateFrameWithPolygon(const Polygon &poly, const Frame &current, size_t p
   return updateFrameWithPolygon(poly, updated, point_index + 1);
 }
 
-Frame getBoundingFrameRecursive(const std::vector<Polygon>& polygons, size_t poly_index)
+artttnik::Frame artttnik::getBoundingFrameRecursive(const std::vector<Polygon>& polygons, size_t poly_index)
 {
   if (poly_index == polygons.size())
   {
@@ -99,6 +105,4 @@ Frame getBoundingFrameRecursive(const std::vector<Polygon>& polygons, size_t pol
 
   Frame next_frame = getBoundingFrameRecursive(polygons, poly_index + 1);
   return updateFrameWithPolygon(polygons[poly_index], next_frame, 0);
-}
-
 }

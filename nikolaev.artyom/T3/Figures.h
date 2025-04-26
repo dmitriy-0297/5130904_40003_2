@@ -13,6 +13,8 @@ struct Point
 
   bool operator==(const Point &other) const;
   bool operator<(const Point &other) const;
+  Point() = default;
+  Point(int x, int y);
 };
 
 struct Polygon
@@ -20,6 +22,8 @@ struct Polygon
   std::vector<Point> points_;
 
   bool operator==(const Polygon &other) const;
+  Polygon() = default;
+  Polygon(const std::vector<Point> &points);
 };
 
 struct Frame

@@ -1,89 +1,75 @@
 #include "Commands.h"
 
-#include <algorithm>
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <numeric>
-#include <sstream>
+#include <vector>
 
-const std::string ERROR_INVALID_COMMAND = "<INVALID COMMAND>";
+using namespace std::placeholders;
 
-namespace artttnik
+const std::string ERROR = "<INVALID COMMAND>\n";
+
+void artttnik::processArea(const std::vector<Polygon> &polygons, const std::string &arg)
 {
-
-VertexParity::VertexParity(bool even) : even_(even)
-{}
-
-bool VertexParity::operator()(const Polygon &poly) const
-{
-  return (poly.points_.size() % 2 == 0) == even_;
-}
-
-VertexCount::VertexCount(std::size_t count) : count_(count)
-{}
-
-bool VertexCount::operator()(const Polygon &poly) const
-{
-  return poly.points_.size() == count_;
-}
-
-void handleAreaCommand(const std::vector<Polygon> &polygons, const std::string &arg)
-{
-  std::function<bool(const Polygon &)> predicate;
-
-  if (arg == "EVEN")
+  if (arg == "EVEN" || arg == "ODD")
   {
-    predicate = VertexParity(true);
-  }
-  else if (arg == "ODD")
-  {
-    predicate = VertexParity(false);
+    bool even = (arg == "EVEN");
+    auto areaCalculator = std::bind(
+        [](bool even, double acc, const Polygon &p) {
+          return (p.points_.size() % 2 == (even ? 0 : 1)) ? acc + calculateArea(p) : acc;
+        },
+        even, _1, _2);
+    double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+    std::cout << std::fixed << std::setprecision(1) << sum << "\n";
   }
   else if (arg == "MEAN")
   {
     if (polygons.empty())
     {
-      std::cout << "0.0\n";
+      std::cerr << ERROR;
       return;
     }
-    double totalArea =
-        std::accumulate(polygons.begin(), polygons.end(), 0.0,
-                        [](double acc, const Polygon &poly) { return acc + calculateArea(poly); });
-    double mean = totalArea / static_cast<double>(polygons.size());
-    std::cout << std::fixed << std::setprecision(1) << mean << "\n";
-    return;
-  }
-  else if (arg == "VERTEXES")
-  {
-    std::istringstream iss(arg);
-    std::size_t target = 0;
-    iss >> target;
-    predicate = VertexCount(target);
+    auto areaCalculator =
+        std::bind([](double acc, const Polygon &p) { return acc + calculateArea(p); }, _1, _2);
+    double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+    std::cout << std::fixed << std::setprecision(1) << sum / polygons.size() << "\n";
   }
   else
   {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return;
+    size_t vertexCount;
+    try
+    {
+      vertexCount = std::stoul(arg);
+      if (vertexCount < 3)
+      {
+        std::cerr << ERROR;
+        return;
+      }
+      auto areaCalculator = std::bind(
+          [](size_t vertexCount, double acc, const Polygon &p) {
+            return (p.points_.size() == vertexCount) ? acc + calculateArea(p) : acc;
+          },
+          vertexCount, _1, _2);
+      double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+      std::cout << std::fixed << std::setprecision(1) << sum << "\n";
+    }
+    catch (const std::invalid_argument)
+    {
+      std::cerr << ERROR;
+    }
+    catch (const std::out_of_range)
+    {
+      std::cerr << ERROR;
+    }
   }
-
-  auto accumulateFunc = std::bind(
-      [](double acc, const Polygon &poly, const std::function<bool(const Polygon &)> &pred) {
-        return pred(poly) ? acc + calculateArea(poly) : acc;
-      },
-      std::placeholders::_1, std::placeholders::_2, predicate);
-
-  double result = std::accumulate(polygons.begin(), polygons.end(), 0.0, accumulateFunc);
-
-  std::cout << std::fixed << std::setprecision(1) << result << "\n";
 }
 
-void handleMaxCommand(const std::vector<Polygon> &polygons, const std::string &arg)
+void artttnik::processMax(const std::vector<Polygon> &polygons, const std::string &arg)
 {
   if (polygons.empty())
   {
-    std::cout << 0 << std::endl;
+    std::cerr << ERROR;
     return;
   }
 
@@ -97,24 +83,23 @@ void handleMaxCommand(const std::vector<Polygon> &polygons, const std::string &a
   }
   else if (arg == "VERTEXES")
   {
-    auto compareAreas = std::bind(
-        [](const Polygon &a, const Polygon &b) { return calculateArea(a) < calculateArea(b); },
-        std::placeholders::_1, std::placeholders::_2);
-
-    auto it = std::max_element(polygons.begin(), polygons.end(), compareAreas);
+    auto it =
+        std::max_element(polygons.begin(), polygons.end(), [](const Polygon &a, const Polygon &b) {
+          return a.points_.size() < b.points_.size();
+        });
     std::cout << it->points_.size() << "\n";
   }
   else
   {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
+    std::cerr << ERROR;
   }
 }
 
-void handleMinCommand(const std::vector<Polygon> &polygons, const std::string &arg)
+void artttnik::processMin(const std::vector<Polygon> &polygons, const std::string &arg)
 {
   if (polygons.empty())
   {
-    std::cout << "0\n";
+    std::cerr << ERROR;
     return;
   }
 
@@ -136,263 +121,138 @@ void handleMinCommand(const std::vector<Polygon> &polygons, const std::string &a
   }
   else
   {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
+    std::cerr << ERROR;
   }
 }
 
-void handleCountCommand(const std::vector<Polygon> &polygons, const std::string &arg)
+void artttnik::processCount(const std::vector<Polygon> &polygons, const std::string &arg)
 {
-  std::function<bool(const Polygon &)> predicate;
+  if (arg == "EVEN" || arg == "ODD")
+  {
+    bool even = (arg == "EVEN");
+    auto predicate = std::bind(
+        [](bool evenFlag, const Polygon &p) { return p.points_.size() % 2 == (evenFlag ? 0 : 1); },
+        even, _1);
 
-  if (arg == "EVEN")
-  {
-    predicate = VertexParity(true);
-  }
-  else if (arg == "ODD")
-  {
-    predicate = VertexParity(false);
-  }
-  else if (arg == "VERTEXES")
-  {
-    std::istringstream iss(arg);
-    std::size_t target = 0;
-    iss >> target;
-    predicate = VertexCount(target);
+    size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
+    std::cout << count << "\n";
   }
   else
   {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
+    if (arg.empty() || !std::all_of(arg.begin(), arg.end(), ::isdigit) ||
+        (arg.size() > 1 && arg[0] == '0'))
+    {
+      std::cerr << ERROR;
+      return;
+    }
+
+    char *endPtr = nullptr;
+    unsigned long vertexCount = std::strtoul(arg.c_str(), &endPtr, 10);
+
+    if (*endPtr != '\0' || vertexCount < 3)
+    {
+      std::cerr << ERROR;
+      return;
+    }
+
+    auto predicate = std::bind(
+        [](size_t count, const Polygon &p) { return p.points_.size() == count; }, vertexCount, _1);
+
+    size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
+    std::cout << count << "\n";
+  }
+}
+
+void artttnik::processInframe(std::istream &input, const std::vector<Polygon> &polygons)
+{
+  Polygon poly;
+  if (!readPolygonFromStream(input, poly))
+  {
+    std::cerr << ERROR;
     return;
   }
 
-  std::size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
-  std::cout << count << "\n";
-}
-
-bool readPoints(size_t remaining, std::vector<Point> &points)
-{
-  if (remaining == 0)
-  {
-    return true;
-  }
-
-  char ch;
-  Point point;
-
-  std::cin >> std::ws >> ch;
-  if (ch != '(')
-  {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return false;
-  }
-
-  if (!(std::cin >> point.x_))
-  {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return false;
-  }
-
-  std::cin >> std::ws >> ch;
-  if (ch != ';')
-  {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return false;
-  }
-
-  if (!(std::cin >> point.y_))
-  {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return false;
-  }
-
-  std::cin >> std::ws >> ch;
-  if (ch != ')')
-  {
-    std::cerr << ERROR_INVALID_COMMAND << std::endl;
-    return false;
-  }
-
-  points.push_back(point);
-  return readPoints(remaining - 1, points);
-}
-
-void handleInframeCommand(const std::vector<Polygon>& polygons)
-{
-  if (polygons.empty())
-  {
+  Frame boundingFrame = getBoundingFrameRecursive(polygons, 0);
+  if (boundingFrame.contains(poly))
+    std::cout << "<TRUE>\n";
+  else
     std::cout << "<FALSE>\n";
-    return;
-  }
-
-  size_t count;
-  if (!(std::cin >> count))
-  {
-    std::cout << ERROR_INVALID_COMMAND << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return;
-  }
-
-  std::vector<Point> points;
-  if (!readPoints(count, points))
-  {
-    std::cout << ERROR_INVALID_COMMAND << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return;
-  }
-
-  Polygon target{points};
-  Frame frame = getBoundingFrameRecursive(polygons);
-
-  bool inside = checkPointsInFrame(target.points_, frame);
-  std::cout << (inside ? "<TRUE>" : "<FALSE>") << "\n";
 }
 
-void removeDuplicates(std::vector<Polygon> &polygons, const Polygon &target, size_t &removed_count)
+void artttnik::processRmecho(std::istream &input, std::vector<Polygon> &polygons)
 {
-  std::vector<Polygon> result;
-  bool previous = false;
-
-  for (size_t i = 0; i < polygons.size(); ++i)
+  Polygon target;
+  if (!readPolygonFromStream(input, target))
   {
-    bool current = (polygons[i] == target);
-
-    if (!(current && previous))
-    {
-      result.push_back(polygons[i]);
-    }
-    else
-    {
-      ++removed_count;
-    }
-
-    previous = current;
-  }
-
-  polygons = result;
-}
-
-void handleRmechoCommand(std::vector<Polygon> &polygons)
-{
-  if (polygons.empty())
-  {
-    std::cout << "0\n";
+    std::cerr << ERROR;
     return;
   }
 
-  size_t count;
-  if (!(std::cin >> count))
-  {
-    std::cout << "ERROR_INVALID_COMMAND" << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return;
-  }
+  auto newEnd =
+      std::unique(polygons.begin(), polygons.end(), [&target](const Polygon &a, const Polygon &b) {
+        return a == target && b == target;
+      });
 
-  std::vector<Point> points;
-  if (!readPoints(count, points))
-  {
-    std::cout << ERROR_INVALID_COMMAND << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return;
-  }
-
-  Polygon target{points};
-  size_t removed = 0;
-
-  removeDuplicates(polygons, target, removed);
+  size_t removed = std::distance(newEnd, polygons.end());
+  polygons.erase(newEnd, polygons.end());
 
   std::cout << removed << "\n";
 }
 
-void processCommands(std::vector<Polygon> &polygons)
+void artttnik::chooseCommand(const std::string &command, std::vector<Polygon> &polygons,
+                             std::istream &input, const std::string &arg)
 {
-  std::string command;
+  if (command == "AREA")
+    processArea(polygons, arg);
+  else if (command == "MAX")
+    processMax(polygons, arg);
+  else if (command == "MIN")
+    processMin(polygons, arg);
+  else if (command == "COUNT")
+    processCount(polygons, arg);
+  else if (command == "INFRAME" && arg.empty())
+    processInframe(input, polygons);
+  else if (command == "RMECHO" && arg.empty())
+    processRmecho(input, polygons);
+  else
+    std::cerr << ERROR;
+}
 
-  if (!(std::cin >> command))
+void artttnik::processCommands(std::vector<Polygon> &polygons)
+{
+  std::string line;
+  if (!std::getline(std::cin, line))
   {
-    if (std::cin.eof())
-    {
-      exit(EXIT_SUCCESS);
-    }
-    std::cout << ERROR_INVALID_COMMAND << std::endl;
     return;
   }
 
-  try
+  if (line.empty())
   {
-    if (command == "AREA")
-    {
-      std::string arg;
-      if (std::cin >> arg)
-      {
-        handleAreaCommand(polygons, arg);
-      }
-      else
-      {
-        throw std::invalid_argument(ERROR_INVALID_COMMAND);
-      }
-    }
-    else if (command == "MAX")
-    {
-      std::string arg;
-      if (std::cin >> arg)
-      {
-        handleMaxCommand(polygons, arg);
-      }
-      else
-      {
-        throw std::invalid_argument(ERROR_INVALID_COMMAND);
-      }
-    }
-    else if (command == "MIN")
-    {
-      std::string arg;
-      if (std::cin >> arg)
-      {
-        handleMinCommand(polygons, arg);
-      }
-      else
-      {
-        throw std::invalid_argument(ERROR_INVALID_COMMAND);
-      }
-    }
-    else if (command == "COUNT")
-    {
-      std::string arg;
-      if (std::cin >> arg)
-      {
-        handleCountCommand(polygons, arg);
-      }
-      else
-      {
-        throw std::invalid_argument(ERROR_INVALID_COMMAND);
-      }
-    }
-    else if (command == "RMECHO")
-    {
-      handleRmechoCommand(polygons);
-    }
+    processCommands(polygons);
+    return;
+  }
 
-    else if (command == "INFRAME")
+  std::istringstream iss(line);
+  std::string command;
+  iss >> command;
+
+  if (command == "INFRAME" || command == "RMECHO")
+  {
+    chooseCommand(command, polygons, iss);
+  }
+  else
+  {
+    std::string arg;
+    iss >> arg;
+    if (iss.eof())
     {
-      handleInframeCommand(polygons);
+      chooseCommand(command, polygons, iss, arg);
     }
     else
     {
-      throw std::invalid_argument(ERROR_INVALID_COMMAND);
+      std::cerr << ERROR;
     }
-  }
-  catch (const std::invalid_argument &e)
-  {
-    std::cout << e.what() << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
   processCommands(polygons);
-}
-
 }

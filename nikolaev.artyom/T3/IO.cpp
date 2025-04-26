@@ -1,59 +1,124 @@
 #include "IO.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <iterator>
-#include <algorithm>
+std::istream &artttnik::operator>>(std::istream &in, Point &point)
+{
+  std::istream::sentry sentry(in);
+  if (!sentry)
+    return in;
 
-namespace artttnik
-{
-std::istream &operator>>(std::istream &input, Point &point)
-{
-  char ch;
-  return input >> ch >> point.x_ >> ch >> point.y_ >> ch;
+  std::string token;
+  in >> token;
+
+  static const std::regex pattern(R"(\((-?\d+);(-?\d+)\))");
+
+  std::smatch match;
+  if (!std::regex_match(token, match, pattern))
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+
+  point.x_ = std::stoi(match[1].str());
+  point.y_ = std::stoi(match[2].str());
+
+  return in;
 }
 
-std::istream &operator>>(std::istream &input, Polygon &poly)
+bool artttnik::readPointsRecursively(std::istream& iss, std::vector<Point>& points, std::size_t remaining)
 {
-  size_t count;
-  if (!(input >> count))
-  {
-    poly.points_.clear();
-    return input;
-  }
+  if (remaining == 0)
+    return true;
 
-  std::vector<Point> temp;
-  temp.reserve(count);
+  Point p;
+  if (!(iss >> p))
+    return false;
 
-  std::copy_n(std::istream_iterator<Point>(input), count, std::back_inserter(temp));
-
-  if (temp.size() == count)
-  {
-    poly.points_ = std::move(temp);
-  }
-  else
-  {
-    poly.points_.clear();
-  }
-
-  return input;
+  points.push_back(p);
+  return readPointsRecursively(iss, points, remaining - 1);
 }
 
-std::vector<Polygon> readPolygonsFromFile(const std::string &filename)
+std::istream& artttnik::operator>>(std::istream& in, Polygon& poly)
 {
+  std::istream::sentry sentry(in);
+  if (!sentry)
+    return in;
+
+  poly.points_.clear();
+
+  std::size_t n = 0;
+  in >> n;
+
+  if (in.fail() || n < 3)
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+
+  std::string line;
+  std::getline(in >> std::ws, line);
+
+  std::istringstream iss(line);
+  poly.points_.reserve(n);
+
+  if (!readPointsRecursively(iss, poly.points_, n))
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+
+  iss >> std::ws;
+  if (!iss.eof())
+  {
+    in.setstate(std::ios::failbit);
+  }
+
+  return in;
+}
+
+std::vector<artttnik::Polygon> artttnik::readPolygonsFromFile(const std::string &filename)
+{
+  std::vector<Polygon> polygons;
   std::ifstream file(filename);
 
-  std::vector<Polygon> polygons;
-  std::transform(std::istream_iterator<Polygon>(file), std::istream_iterator<Polygon>(),
-                 std::back_inserter(polygons), [](Polygon p) { return p; });
+  std::string line;
+  while (std::getline(file, line))
+  {
+    if (line.empty())
+    {
+      continue;
+    }
 
-  polygons.erase(std::remove_if(polygons.begin(), polygons.end(),
-                                [](const Polygon &p) { return p.points_.empty(); }),
-                 polygons.end());
+    std::istringstream iss(line);
+    Polygon poly;
+    if (iss >> poly)
+    {
+      polygons.push_back(poly);
+    }
+  }
 
   return polygons;
 }
 
+bool artttnik::readPolygonFromStream(std::istream &input, Polygon &target)
+{
+  std::string line;
+  if (!std::getline(input, line))
+  {
+    return false;
+  }
+
+  if (line.empty())
+  {
+    return false;
+  }
+
+  std::istringstream iss(line);
+  Polygon poly;
+  if (iss >> poly)
+  {
+    target = std::move(poly);
+    return true;
+  }
+
+  return false;
 }
