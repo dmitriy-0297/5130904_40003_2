@@ -54,11 +54,11 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
       double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
       std::cout << std::fixed << std::setprecision(1) << sum << "\n";
     }
-    catch (const std::invalid_argument)
+    catch (const std::invalid_argument&)
     {
       std::cerr << ERROR;
     }
-    catch (const std::out_of_range)
+    catch (const std::out_of_range&)
     {
       std::cerr << ERROR;
     }
