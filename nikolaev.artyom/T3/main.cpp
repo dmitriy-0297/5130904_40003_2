@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
   if (argc < 2)
   {
-    std::cerr << "<INVALID FILE>" << std::endl;
+    std::cout << "<INVALID FILE>" << std::endl;
     return EXIT_FAILURE;
   }
 

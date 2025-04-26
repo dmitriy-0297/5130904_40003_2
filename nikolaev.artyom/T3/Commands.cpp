@@ -27,7 +27,7 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
   {
     if (polygons.empty())
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
       return;
     }
     auto areaCalculator =
@@ -43,7 +43,7 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
       vertexCount = std::stoul(arg);
       if (vertexCount < 3)
       {
-        std::cerr << ERROR;
+        std::cout << ERROR;
         return;
       }
       auto areaCalculator = std::bind(
@@ -56,11 +56,11 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
     }
     catch (const std::invalid_argument&)
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
     }
     catch (const std::out_of_range&)
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
     }
   }
 }
@@ -69,7 +69,7 @@ void artttnik::processMax(const std::vector<Polygon> &polygons, const std::strin
 {
   if (polygons.empty())
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
     return;
   }
 
@@ -91,7 +91,7 @@ void artttnik::processMax(const std::vector<Polygon> &polygons, const std::strin
   }
   else
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
   }
 }
 
@@ -99,7 +99,7 @@ void artttnik::processMin(const std::vector<Polygon> &polygons, const std::strin
 {
   if (polygons.empty())
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
     return;
   }
 
@@ -121,7 +121,7 @@ void artttnik::processMin(const std::vector<Polygon> &polygons, const std::strin
   }
   else
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
   }
 }
 
@@ -142,7 +142,7 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
     if (arg.empty() || !std::all_of(arg.begin(), arg.end(), ::isdigit) ||
         (arg.size() > 1 && arg[0] == '0'))
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
       return;
     }
 
@@ -151,7 +151,7 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
 
     if (*endPtr != '\0' || vertexCount < 3)
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
       return;
     }
 
@@ -168,7 +168,7 @@ void artttnik::processInframe(std::istream &input, const std::vector<Polygon> &p
   Polygon poly;
   if (!readPolygonFromStream(input, poly))
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
     return;
   }
 
@@ -184,7 +184,7 @@ void artttnik::processRmecho(std::istream &input, std::vector<Polygon> &polygons
   Polygon target;
   if (!readPolygonFromStream(input, target))
   {
-    std::cerr << ERROR;
+    std::cout << ERROR;
     return;
   }
 
@@ -215,7 +215,7 @@ void artttnik::chooseCommand(const std::string &command, std::vector<Polygon> &p
   else if (command == "RMECHO" && arg.empty())
     processRmecho(input, polygons);
   else
-    std::cerr << ERROR;
+    std::cout << ERROR;
 }
 
 void artttnik::processCommands(std::vector<Polygon> &polygons)
@@ -250,7 +250,7 @@ void artttnik::processCommands(std::vector<Polygon> &polygons)
     }
     else
     {
-      std::cerr << ERROR;
+      std::cout << ERROR;
     }
   }
 
