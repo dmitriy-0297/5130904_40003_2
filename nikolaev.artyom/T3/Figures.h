@@ -36,7 +36,6 @@ struct Frame
 };
 
 double calculateArea(const Polygon &poly);
-bool checkPointsInFrame(const std::vector<Point> &points, const Frame &frame, size_t index = 0);
 Frame updateFrameWithPolygon(const Polygon &poly, const Frame &current, size_t point_index);
 Frame getBoundingFrameRecursive(const std::vector<Polygon> &polygons, size_t poly_index = 0);
 

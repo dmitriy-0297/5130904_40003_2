@@ -10,17 +10,54 @@ using namespace std::placeholders;
 
 const std::string ERROR = "<INVALID COMMAND>\n";
 
+artttnik::EvenOddAreaAccumulator::EvenOddAreaAccumulator(bool evenFlag) : even(evenFlag)
+{}
+
+double artttnik::EvenOddAreaAccumulator::operator()(double acc, const Polygon &p) const
+{
+  return (p.points_.size() % 2 == (even ? 0 : 1)) ? acc + calculateArea(p) : acc;
+}
+
+artttnik::VertexCountAreaAccumulator::VertexCountAreaAccumulator(size_t count) : vertexCount(count)
+{}
+
+double artttnik::VertexCountAreaAccumulator::operator()(double acc, const Polygon &p) const
+{
+  return (p.points_.size() == vertexCount) ? acc + calculateArea(p) : acc;
+}
+
+artttnik::EvenOddPredicate::EvenOddPredicate(bool evenFlag) : even(evenFlag)
+{}
+bool artttnik::EvenOddPredicate::operator()(const Polygon &p) const
+{
+  return p.points_.size() % 2 == (even ? 0 : 1);
+}
+
+artttnik::VertexCountPredicate::VertexCountPredicate(size_t count) : vertexCount(count)
+{}
+
+bool artttnik::VertexCountPredicate::operator()(const Polygon &p) const
+{
+  return p.points_.size() == vertexCount;
+}
+
+bool artttnik::AreaComparator::operator()(const Polygon &a, const Polygon &b) const
+{
+  return calculateArea(a) < calculateArea(b);
+}
+
+bool artttnik::VertexCountComparator::operator()(const Polygon &a, const Polygon &b) const
+{
+  return a.points_.size() < b.points_.size();
+}
+
 void artttnik::processArea(const std::vector<Polygon> &polygons, const std::string &arg)
 {
   if (arg == "EVEN" || arg == "ODD")
   {
     bool even = (arg == "EVEN");
-    auto areaCalculator = std::bind(
-        [](bool even, double acc, const Polygon &p) {
-          return (p.points_.size() % 2 == (even ? 0 : 1)) ? acc + calculateArea(p) : acc;
-        },
-        even, _1, _2);
-    double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+    double sum =
+        std::accumulate(polygons.begin(), polygons.end(), 0.0, EvenOddAreaAccumulator(even));
     std::cout << std::fixed << std::setprecision(1) << sum << "\n";
   }
   else if (arg == "MEAN")
@@ -30,9 +67,9 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
       std::cout << ERROR;
       return;
     }
-    auto areaCalculator =
-        std::bind([](double acc, const Polygon &p) { return acc + calculateArea(p); }, _1, _2);
-    double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+    double sum =
+        std::accumulate(polygons.begin(), polygons.end(), 0.0,
+                        [](double acc, const Polygon &p) { return acc + calculateArea(p); });
     std::cout << std::fixed << std::setprecision(1) << sum / polygons.size() << "\n";
   }
   else
@@ -46,19 +83,15 @@ void artttnik::processArea(const std::vector<Polygon> &polygons, const std::stri
         std::cout << ERROR;
         return;
       }
-      auto areaCalculator = std::bind(
-          [](size_t vertexCount, double acc, const Polygon &p) {
-            return (p.points_.size() == vertexCount) ? acc + calculateArea(p) : acc;
-          },
-          vertexCount, _1, _2);
-      double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0, areaCalculator);
+      double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
+                                   VertexCountAreaAccumulator(vertexCount));
       std::cout << std::fixed << std::setprecision(1) << sum << "\n";
     }
-    catch (const std::invalid_argument&)
+    catch (const std::invalid_argument &)
     {
       std::cout << ERROR;
     }
-    catch (const std::out_of_range&)
+    catch (const std::out_of_range &)
     {
       std::cout << ERROR;
     }
@@ -75,18 +108,12 @@ void artttnik::processMax(const std::vector<Polygon> &polygons, const std::strin
 
   if (arg == "AREA")
   {
-    auto it =
-        std::max_element(polygons.begin(), polygons.end(), [](const Polygon &a, const Polygon &b) {
-          return calculateArea(a) < calculateArea(b);
-        });
+    auto it = std::max_element(polygons.begin(), polygons.end(), AreaComparator());
     std::cout << std::fixed << std::setprecision(1) << calculateArea(*it) << "\n";
   }
   else if (arg == "VERTEXES")
   {
-    auto it =
-        std::max_element(polygons.begin(), polygons.end(), [](const Polygon &a, const Polygon &b) {
-          return a.points_.size() < b.points_.size();
-        });
+    auto it = std::max_element(polygons.begin(), polygons.end(), VertexCountComparator());
     std::cout << it->points_.size() << "\n";
   }
   else
@@ -105,18 +132,12 @@ void artttnik::processMin(const std::vector<Polygon> &polygons, const std::strin
 
   if (arg == "AREA")
   {
-    auto it =
-        std::min_element(polygons.begin(), polygons.end(), [](const Polygon &a, const Polygon &b) {
-          return calculateArea(a) < calculateArea(b);
-        });
+    auto it = std::min_element(polygons.begin(), polygons.end(), AreaComparator());
     std::cout << std::fixed << std::setprecision(1) << calculateArea(*it) << "\n";
   }
   else if (arg == "VERTEXES")
   {
-    auto it =
-        std::min_element(polygons.begin(), polygons.end(), [](const Polygon &a, const Polygon &b) {
-          return a.points_.size() < b.points_.size();
-        });
+    auto it = std::min_element(polygons.begin(), polygons.end(), VertexCountComparator());
     std::cout << it->points_.size() << "\n";
   }
   else
@@ -130,13 +151,7 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
   if (arg == "EVEN" || arg == "ODD")
   {
     bool even = (arg == "EVEN");
-    auto predicate = std::bind(
-        [](bool evenFlag, const Polygon &point) {
-            return point.points_.size() % 2 == (evenFlag ? 0 : 1);
-        },
-        even, _1);
-
-    size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
+    size_t count = std::count_if(polygons.begin(), polygons.end(), EvenOddPredicate(even));
     std::cout << count << "\n";
   }
   else
@@ -149,21 +164,15 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
         std::cout << ERROR;
         return;
       }
-
-      auto predicate = std::bind(
-          [](size_t count, const Polygon &p) {
-              return p.points_.size() == count;
-          },
-          vertexCount, _1);
-
-      size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
+      size_t count =
+          std::count_if(polygons.begin(), polygons.end(), VertexCountPredicate(vertexCount));
       std::cout << count << "\n";
     }
-    catch (const std::invalid_argument&)
+    catch (const std::invalid_argument &)
     {
       std::cout << ERROR;
     }
-    catch (const std::out_of_range&)
+    catch (const std::out_of_range &)
     {
       std::cout << ERROR;
     }
@@ -195,11 +204,11 @@ void artttnik::processRmecho(std::istream &input, std::vector<Polygon> &polygons
     return;
   }
 
-  auto newEnd =
-      std::unique(polygons.begin(), polygons.end(), [&target](const Polygon &a, const Polygon &b) {
-        return a == target && b == target;
-      });
+  auto predicate = std::bind([](const Polygon &target, const Polygon &a,
+                                const Polygon &b) { return a == target && b == target; },
+                             std::cref(target), _1, _2);
 
+  auto newEnd = std::unique(polygons.begin(), polygons.end(), predicate);
   size_t removed = std::distance(newEnd, polygons.end());
   polygons.erase(newEnd, polygons.end());
 

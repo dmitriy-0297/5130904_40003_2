@@ -16,6 +16,39 @@
 namespace artttnik
 {
 
+struct EvenOddAreaAccumulator {
+  bool even;
+  explicit EvenOddAreaAccumulator(bool evenFlag);
+  double operator()(double acc, const Polygon &p) const;
+};
+
+struct VertexCountAreaAccumulator
+{
+  size_t vertexCount;
+  explicit VertexCountAreaAccumulator(size_t count);
+  double operator()(double acc, const Polygon &p) const;
+};
+
+struct EvenOddPredicate {
+  bool even;
+  explicit EvenOddPredicate(bool evenFlag);
+  bool operator()(const Polygon &p) const;
+};
+
+struct VertexCountPredicate {
+  size_t vertexCount;
+  explicit VertexCountPredicate(size_t count);
+  bool operator()(const Polygon &p) const;
+};
+
+struct AreaComparator {
+  bool operator()(const Polygon &a, const Polygon &b) const;
+};
+
+struct VertexCountComparator {
+  bool operator()(const Polygon &a, const Polygon &b) const;
+};
+
 void processArea(const std::vector<Polygon> &polygons, const std::string &arg);
 void processMax(const std::vector<Polygon> &polygons, const std::string &arg);
 void processMin(const std::vector<Polygon> &polygons, const std::string &arg);

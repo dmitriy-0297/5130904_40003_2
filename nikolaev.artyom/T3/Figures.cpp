@@ -70,15 +70,6 @@ double artttnik::calculateArea(const Polygon &poly)
   return std::abs(std::accumulate(edges.begin(), edges.end(), 0.0, area)) / 2.0;
 }
 
-bool artttnik::checkPointsInFrame(const std::vector<Point> &points, const Frame &frame, size_t index)
-{
-  if (index >= points.size())
-    return true;
-  if (!frame.contains(points[index]))
-    return false;
-  return checkPointsInFrame(points, frame, index + 1);
-}
-
 artttnik::Frame artttnik::updateFrameWithPolygon(const Polygon &poly, const Frame &current, size_t point_index)
 {
   if (point_index >= poly.points_.size())
