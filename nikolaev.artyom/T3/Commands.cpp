@@ -131,7 +131,9 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
   {
     bool even = (arg == "EVEN");
     auto predicate = std::bind(
-        [](bool evenFlag, const Polygon &p) { return p.points_.size() % 2 == (evenFlag ? 0 : 1); },
+        [](bool evenFlag, const Polygon &point) {
+            return point.points_.size() % 2 == (evenFlag ? 0 : 1);
+        },
         even, _1);
 
     size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
@@ -139,27 +141,32 @@ void artttnik::processCount(const std::vector<Polygon> &polygons, const std::str
   }
   else
   {
-    if (arg.empty() || !std::all_of(arg.begin(), arg.end(), ::isdigit) ||
-        (arg.size() > 1 && arg[0] == '0'))
+    try
+    {
+      size_t vertexCount = std::stoul(arg);
+      if (vertexCount < 3)
+      {
+        std::cout << ERROR;
+        return;
+      }
+
+      auto predicate = std::bind(
+          [](size_t count, const Polygon &p) {
+              return p.points_.size() == count;
+          },
+          vertexCount, _1);
+
+      size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
+      std::cout << count << "\n";
+    }
+    catch (const std::invalid_argument&)
     {
       std::cout << ERROR;
-      return;
     }
-
-    char *endPtr = nullptr;
-    unsigned long vertexCount = std::strtoul(arg.c_str(), &endPtr, 10);
-
-    if (*endPtr != '\0' || vertexCount < 3)
+    catch (const std::out_of_range&)
     {
       std::cout << ERROR;
-      return;
     }
-
-    auto predicate = std::bind(
-        [](size_t count, const Polygon &p) { return p.points_.size() == count; }, vertexCount, _1);
-
-    size_t count = std::count_if(polygons.begin(), polygons.end(), predicate);
-    std::cout << count << "\n";
   }
 }
 

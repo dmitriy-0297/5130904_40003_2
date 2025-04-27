@@ -10,7 +10,7 @@ using namespace artttnik;
 
 int main(int argc, char *argv[])
 {
-  if (argc < 2)
+  if (argc != 2)
   {
     std::cout << "<INVALID FILE>" << std::endl;
     return EXIT_FAILURE;
@@ -22,3 +22,4 @@ int main(int argc, char *argv[])
 
   return EXIT_SUCCESS;
 }
+

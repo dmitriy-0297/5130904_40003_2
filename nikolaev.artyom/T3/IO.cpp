@@ -80,22 +80,22 @@ std::vector<artttnik::Polygon> artttnik::readPolygonsFromFile(const std::string 
   std::vector<Polygon> polygons;
   std::ifstream file(filename);
 
-  std::string line;
-  while (std::getline(file, line))
-  {
-    if (line.empty())
-    {
-      continue;
+  std::function<void()> readNext = [&file, &polygons, &readNext]() {
+    std::string line;
+    if (!std::getline(file, line)) {
+      return;
     }
 
     std::istringstream iss(line);
     Polygon poly;
-    if (iss >> poly)
-    {
+    if (iss >> poly) {
       polygons.push_back(poly);
     }
-  }
 
+    readNext();
+  };
+
+  readNext();
   return polygons;
 }
 
