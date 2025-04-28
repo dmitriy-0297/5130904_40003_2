@@ -16,25 +16,24 @@
 
 namespace kirillova
 {
-	struct Point
-	{
-		int x, y;
-		bool operator==(const Point& other) const;
-	};
+  struct Point
+  {
+    int x, y;
+    bool operator==(const Point& other) const;
+  };
 
-	struct Polygon
-	{
-		std::vector<Point> points;
-		bool operator==(const Polygon& other) const;
-	};
+  struct Polygon
+  {
+    std::vector<Point> points;
+    bool operator==(const Polygon& other) const;
+  };
 
-	double getPolygonsArea(const Polygon& polygon);
-	size_t getPolygonSize(const Polygon& polygon);
-	//Polygon normalizePolygonsPoints(const Polygon& polygon);
+  double getPolygonsArea(const Polygon& polygon);
+  size_t getPolygonSize(const Polygon& polygon);
 
-	std::istream& operator>>(std::istream& in, Polygon& polygon);
-	std::ostream& operator<<(std::ostream& out, const Point& p);
-	std::ostream& operator<<(std::ostream& out, const Polygon& polygon);
+  std::istream& operator>>(std::istream& in, Polygon& polygon);
+  std::ostream& operator<<(std::ostream& out, const Point& p);
+  std::ostream& operator<<(std::ostream& out, const Polygon& polygon);
 }
 
 #endif
