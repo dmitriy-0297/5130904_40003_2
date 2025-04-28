@@ -31,23 +31,6 @@ namespace kirillova
     return polygon.points.size();
   }
 
-  /*Polygon normalizePolygonsPoints(const Polygon& polygon)
-  {
-    if (polygon.points.empty()) return polygon;
-
-    Polygon normalizedPolygon = polygon;
-    int dx = polygon.points[0].x;
-    int dy = polygon.points[0].y;
-
-    for (auto& p : normalizedPolygon.points)
-    {
-      p.x -= dx;
-      p.y -= dy;
-    }
-
-    return normalizedPolygon;
-  }*/
-
   std::istream& operator>>(std::istream& in, Polygon& polygon)
   {
     polygon.points.clear();
