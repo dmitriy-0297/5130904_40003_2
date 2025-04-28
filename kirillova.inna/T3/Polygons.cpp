@@ -17,9 +17,9 @@ namespace kirillova
     double area = 0.0;
     const auto& points = polygon.points;
 
-    for (int i = 0; i < points.size(); ++i)
+    for (size_t i = 0; i < points.size(); ++i)
     {
-      int j = (i + 1) % points.size();
+      size_t j = (i + 1) % points.size();
       area += (points[i].x * points[j].y) - (points[j].x * points[i].y);
     }
 
