@@ -50,6 +50,12 @@ namespace kirillova
     std::istringstream iss(line);
     size_t n;
     iss >> n;
+    if (n < 3)
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+
     for (size_t i = 0; i < n; ++i)
     {
       Point p;
@@ -61,6 +67,12 @@ namespace kirillova
       }
       polygon.points.push_back(p);
     }
+
+    if (polygon.points.size() != n)
+    {
+      in.setstate(std::ios::failbit);
+    }
+
     return in;
   }
 
