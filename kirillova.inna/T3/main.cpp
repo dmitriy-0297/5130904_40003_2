@@ -37,12 +37,6 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    if (file.fail() && !file.eof())
-    {
-        std::cerr << ERROR_OF_READING_FILE << "\n";
-        return EXIT_FAILURE;
-    }
-
     std::string commandLine;
     while (std::getline(std::cin, commandLine))
     {

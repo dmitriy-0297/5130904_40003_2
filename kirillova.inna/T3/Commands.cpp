@@ -157,8 +157,8 @@ namespace kirillova
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
             std::bind(
-              &checkParity,
-              std::bind(&getSumOfCoordinates, _1),
+              std::equal_to<>(),
+              std::bind(std::modulus<int>(), std::bind(getPolygonSize, _1), 2),
               parity
             )
           );
