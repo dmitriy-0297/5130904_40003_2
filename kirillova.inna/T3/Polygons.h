@@ -30,6 +30,7 @@ namespace kirillova
 
   double getPolygonsArea(const Polygon& polygon);
   size_t getPolygonSize(const Polygon& polygon);
+  bool same_comparator(const Polygon& polygon, const Polygon& other);
 
   std::istream& operator>>(std::istream& in, Polygon& polygon);
   std::ostream& operator<<(std::ostream& out, const Point& p);

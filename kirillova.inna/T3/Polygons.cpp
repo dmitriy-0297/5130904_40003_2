@@ -31,6 +31,15 @@ namespace kirillova
     return polygon.points.size();
   }
 
+  bool same_comparator(const Polygon& polygon, const Polygon& other)
+  {
+    if (polygon.points.size() != other.points.size())
+    {
+      return false;
+    }
+    return std::is_permutation(polygon.points.begin(), polygon.points.end(), other.points.begin());
+  }
+
   std::istream& operator>>(std::istream& in, Polygon& polygon)
   {
     polygon.points.clear();
