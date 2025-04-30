@@ -71,9 +71,6 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
         return in;
     }
 
-    long long key1 = 0ll;
-    std::complex<double> key2;
-    std::string key3;
     DataStruct temp;
 
     char c;
