@@ -30,6 +30,8 @@ namespace kirillova
 
   double getPolygonsArea(const Polygon& polygon);
   size_t getPolygonSize(const Polygon& polygon);
+  int getSumOfCoordinates(const Polygon& polygon);
+  bool checkParity(int sum, int parity);
 
   std::istream& operator>>(std::istream& in, Polygon& polygon);
   std::ostream& operator<<(std::ostream& out, const Point& p);

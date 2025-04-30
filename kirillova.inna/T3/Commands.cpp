@@ -26,11 +26,6 @@ namespace kirillova
     return TypeOfCommand::INVALID;
   }
 
-  bool isValidVertexCount(int vertices)
-  {
-    return vertices >= 3;
-  }
-
   void executeCommands(const std::vector<Polygon>& polygons, const std::string& command, const std::string& arguments)
   {
     using namespace std::placeholders;
@@ -64,7 +59,6 @@ namespace kirillova
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
             return;
           }
-
           double total = std::accumulate(
             polygons.begin(), polygons.end(), 0.0,
             std::bind(std::plus<>(), _1, std::bind(getPolygonsArea, _2))
@@ -77,12 +71,6 @@ namespace kirillova
           try
           {
             int vertices = std::stoi(arguments);
-            if (!isValidVertexCount(vertices))
-            {
-              std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
-              return;
-            }
-
             double sum = std::accumulate(
               polygons.begin(), polygons.end(), 0.0,
               std::bind(std::plus<>(), _1,
@@ -99,9 +87,9 @@ namespace kirillova
             );
             std::cout << std::fixed << std::setprecision(1) << sum << '\n';
           }
-          catch (...)
+          catch (const std::invalid_argument&)
           {
-            std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+            std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           }
         }
         break;
@@ -112,7 +100,6 @@ namespace kirillova
           std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           return;
         }
-
         if (arguments == "AREA")
         {
           auto it = std::max_element(
@@ -131,17 +118,16 @@ namespace kirillova
         }
         else
         {
-          std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+          std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
         break;
 
       case TypeOfCommand::MIN:
         if (polygons.empty())
         {
-          std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+          std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           return;
         }
-
         if (arguments == "AREA")
         {
           auto it = std::min_element(
@@ -160,7 +146,7 @@ namespace kirillova
         }
         else
         {
-          std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+          std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
         break;
 
@@ -171,8 +157,8 @@ namespace kirillova
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
             std::bind(
-              std::equal_to<>(),
-              std::bind(std::modulus<int>(), std::bind(getPolygonSize, _1), 2),
+              &checkParity,
+              std::bind(&getSumOfCoordinates, _1),
               parity
             )
           );
@@ -183,12 +169,6 @@ namespace kirillova
           try
           {
             int vertices = std::stoi(arguments);
-            if (!isValidVertexCount(vertices))
-            {
-              std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
-              return;
-            }
-
             auto count = std::count_if(
               polygons.begin(), polygons.end(),
               std::bind(
@@ -199,9 +179,9 @@ namespace kirillova
             );
             std::cout << count << '\n';
           }
-          catch (...)
+          catch (const std::invalid_argument&)
           {
-            std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+            std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           }
         }
         break;
@@ -212,13 +192,6 @@ namespace kirillova
           Polygon target;
           std::istringstream iss(arguments);
           iss >> target;
-
-          if (iss.fail() || target.points.size() < 3)
-          {
-            std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
-            return;
-          }
-
           double targetArea = getPolygonsArea(target);
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
@@ -229,9 +202,9 @@ namespace kirillova
           );
           std::cout << count << '\n';
         }
-        catch (...)
+        catch (const std::invalid_argument&)
         {
-          std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+          std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
         break;
 
@@ -241,32 +214,28 @@ namespace kirillova
           Polygon target;
           std::istringstream iss(arguments);
           iss >> target;
-
-          if (iss.fail() || target.points.size() < 3)
-          {
-            std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
-            return;
-          }
-
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
             [&target](const Polygon& p)
             {
               return p.points.size() == target.points.size() &&
-                     std::is_permutation(p.points.begin(), p.points.end(), target.points.begin());
+                std::is_permutation(
+                  p.points.begin(), p.points.end(),
+                  target.points.begin()
+                );
             }
           );
           std::cout << count << '\n';
         }
-        catch (...)
+        catch (const std::invalid_argument&)
         {
-          std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+          std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
         break;
 
       case TypeOfCommand::INVALID:
       default:
-        std::cerr << ERROR_OF_WRONG_COMMAND << "\n";
+        std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         break;
     }
   }
