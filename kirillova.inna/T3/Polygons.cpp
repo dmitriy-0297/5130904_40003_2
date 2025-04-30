@@ -31,21 +31,6 @@ namespace kirillova
     return polygon.points.size();
   }
 
-  int getSumOfCoordinates(const Polygon& polygon)
-  {
-    return std::accumulate(
-      polygon.points.begin(),
-      polygon.points.end(),
-      0,
-      [](int acc, const Point& p) { return acc + p.x + p.y; }
-    );
-  }
-
-  bool checkParity(int sum, int parity)
-  {
-    return (sum % 2) == parity;
-  }
-
   std::istream& operator>>(std::istream& in, Polygon& polygon)
   {
     polygon.points.clear();
