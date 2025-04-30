@@ -1,19 +1,19 @@
 ﻿#include "DataStruct.h"
 
 StreamGuard::StreamGuard(std::basic_ios<char>& s) :
-	s_(s),
-	width_(s.width()),
-	fill_(s.fill()),
-	precision_(s.precision()),
-	fmt_(s.flags())
+    s_(s),
+    width_(s.width()),
+    fill_(s.fill()),
+    precision_(s.precision()),
+    fmt_(s.flags())
 {}
 
 StreamGuard::~StreamGuard()
 {
-	s_.width(width_);
-	s_.fill(fill_);
-	s_.precision(precision_);
-	s_.flags(fmt_);
+    s_.width(width_);
+    s_.fill(fill_);
+    s_.precision(precision_);
+    s_.flags(fmt_);
 }
 
 std::complex<double> parse_complex(const std::string& input)
@@ -29,14 +29,13 @@ std::complex<double> parse_complex(const std::string& input)
 std::istream& operator>>(std::istream& in, DelimiterIO&& data)
 {
     std::istream::sentry sentry(in);
-    if (!sentry)
-    {
+    if (!sentry) {
         return in;
     }
+
     char c = '0';
     in >> c;
-    if (in && c != data.exp)
-    {
+    if (in && c != data.exp) {
         in.setstate(std::ios::failbit);
     }
     return in;
@@ -45,22 +44,22 @@ std::istream& operator>>(std::istream& in, DelimiterIO&& data)
 std::istream& operator>>(std::istream& in, LabelIO& data)
 {
     std::istream::sentry sentry(in);
-    if (!sentry)
-    {
+    if (!sentry) {
         return in;
     }
+
     std::string s = "";
     in >> s;
     bool invalidInput = in.eof() || s.length() != 4;
-    if (!invalidInput)
-    {
-        invalidInput = s.substr(0, 3) != "key" || !(std::isdigit(s.c_str()[3]));
+    if (!invalidInput) {
+        invalidInput = s.substr(0, 3) != "key" || !std::isdigit(s[3]);
     }
-    if (invalidInput)
-    {
+
+    if (invalidInput) {
         in.setstate(std::ios::failbit);
         return in;
     }
+
     data.exp = s;
     return in;
 }
@@ -68,8 +67,7 @@ std::istream& operator>>(std::istream& in, LabelIO& data)
 std::istream& operator>>(std::istream& in, DataStruct& data)
 {
     std::istream::sentry sentry(in);
-    if (!sentry)
-    {
+    if (!sentry) {
         return in;
     }
 
@@ -77,95 +75,89 @@ std::istream& operator>>(std::istream& in, DataStruct& data)
     std::complex<double> key2;
     std::string key3;
     DataStruct temp;
-    {
-        char c;
-        using sep = DelimiterIO;
-        LabelIO label{ "" };
-        int itter = 0;
-        int option = 0;
-        bool streamFLag = true;
-        bool SLLMask = true;
-        bool CMPMask = true;
-        std::string inputStr = "";
 
-        if (!in || in.peek() == EOF) 
-        {
-            in.setstate(std::ios::failbit);
-            return in;
-        }
-        if (!(in >> sep{ '(' } && in >> sep{ ':' }))
-        {
-            streamFLag = false;
-        }
-        while (in && itter < 3 && streamFLag)
-        {
-            in >> label;
-            in >> std::ws;
-            option = static_cast<int>(label.exp[3]) - 48;
-            switch (option)
-            {
-            case 1:
-                std::getline(in, inputStr, ':');
-                if (std::regex_match(inputStr, REGEX_SLL_LIT))
-                {
-                    temp.key1 = std::stoll(inputStr);
-                }
-                else
-                {
-                    SLLMask = false;
-                }
-                break;
-            case 2:
-                std::getline(in, inputStr, ':');
-                if (std::regex_match(inputStr, REGEX_CMP_LSP))
-                {
-                    temp.key2 = parse_complex(inputStr);
-                }
-                else
-                {
-                    CMPMask = false;
-                }
-                break;
-            case 3:
-                in >> sep{ '\"' };
-                std::getline(in, inputStr, '\"');
-                in >> sep{ ':' };
-                if (in)
-                {
-                    temp.key3 = inputStr;
-                }
-                else
-                {
-                    streamFLag = false;
-                }
-                break;
-            default:
-                streamFLag = false;
-                break;
-            }
-            inputStr = "";
-            itter++;
-        }
+    char c;
+    using sep = DelimiterIO;
+    LabelIO label{ "" };
+    int iter = 0;
+    int option = 0;
+    bool streamFlag = true;
+    bool sllMask = true;
+    bool cmpMask = true;
+    std::string inputStr = "";
 
-        if (in && streamFLag && SLLMask && CMPMask && itter == 3 && (in >> sep{ ')' }))
-        {
-            data = temp;   
-            return in;
-        }
-        
+    if (!in || in.peek() == EOF) {
         in.setstate(std::ios::failbit);
-        in.clear();
-        in >> c;
-        while (in && c != ')')
-        {
-            if (in.peek() == EOF)
-            {
-                return in;
-            }
-            in >> c;
-        }
-        return operator>>(in, data);
+        return in;
     }
+
+    if (!(in >> sep{ '(' } && in >> sep{ ':' })) {
+        streamFlag = false;
+    }
+
+    while (in && iter < 3 && streamFlag) {
+        in >> label;
+        in >> std::ws;
+        option = static_cast<int>(label.exp[3]) - 48;
+
+        switch (option) {
+        case 1:
+            std::getline(in, inputStr, ':');
+            if (std::regex_match(inputStr, REGEX_SLL_LIT)) {
+                temp.key1 = std::stoll(inputStr);
+            }
+            else {
+                sllMask = false;
+            }
+            break;
+
+        case 2:
+            std::getline(in, inputStr, ':');
+            if (std::regex_match(inputStr, REGEX_CMP_LSP)) {
+                temp.key2 = parse_complex(inputStr);
+            }
+            else {
+                cmpMask = false;
+            }
+            break;
+
+        case 3:
+            in >> sep{ '\"' };
+            std::getline(in, inputStr, '\"');
+            in >> sep{ ':' };
+            if (in) {
+                temp.key3 = inputStr;
+            }
+            else {
+                streamFlag = false;
+            }
+            break;
+
+        default:
+            streamFlag = false;
+            break;
+        }
+
+        inputStr = "";
+        iter++;
+    }
+
+    if (in && streamFlag && sllMask && cmpMask && iter == 3 && (in >> sep{ ')' })) {
+        data = temp;
+        return in;
+    }
+
+    in.setstate(std::ios::failbit);
+    in.clear();
+    in >> c;
+    while (in && c != ')') {
+        if (in.peek() == EOF) {
+            return in;
+        }
+        in >> c;
+    }
+
+    return operator>>(in, data);
 }
 
 std::ostream& operator<<(std::ostream& out, const DataStruct& data)
@@ -181,13 +173,13 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& data)
 
 bool compare(const DataStruct& a, const DataStruct& b)
 {
-    if (a.key1 != b.key1)
-    {
+    if (a.key1 != b.key1) {
         return a.key1 < b.key1;
     }
-    if (std::abs(a.key2) != std::abs(b.key2))
-    {
+
+    if (std::abs(a.key2) != std::abs(b.key2)) {
         return std::abs(a.key2) < std::abs(b.key2);
     }
+
     return a.key3.size() < b.key3.size();
 }

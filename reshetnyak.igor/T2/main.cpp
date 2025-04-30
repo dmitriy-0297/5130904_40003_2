@@ -1,4 +1,9 @@
 #include "DataStruct.h"
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <iostream>
+#include <cstdlib>
 
 int main()
 {
@@ -10,14 +15,17 @@ int main()
         std::back_inserter(dataVector)
     );
 
-    if (dataVector.empty())
-    {
+    if (dataVector.empty()) {
         std::cout << "Empty dataVector";
     }
 
     std::sort(dataVector.begin(), dataVector.end(), compare);
 
-    std::copy(dataVector.begin(), dataVector.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+    std::copy(
+        dataVector.begin(),
+        dataVector.end(),
+        std::ostream_iterator<DataStruct>(std::cout, "\n")
+    );
 
     return EXIT_SUCCESS;
 }
