@@ -19,7 +19,7 @@ namespace kirillova
 
     for (size_t i = 0; i < points.size(); ++i)
     {
-      int j = (i + 1) % points.size();
+      size_t j = (i + 1) % points.size();
       area += (points[i].x * points[j].y) - (points[j].x * points[i].y);
     }
 
@@ -37,7 +37,9 @@ namespace kirillova
     {
       return false;
     }
-    return std::is_permutation(polygon.points.begin(), polygon.points.end(), other.points.begin());
+
+    return std::is_permutation(
+      polygon.points.begin(), polygon.points.end(), other.points.begin());
   }
 
   std::istream& operator>>(std::istream& in, Polygon& polygon)
@@ -56,6 +58,13 @@ namespace kirillova
     std::istringstream iss(line);
     size_t n;
     iss >> n;
+
+    if (n < 3)
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+
     for (size_t i = 0; i < n; ++i)
     {
       Point p;
@@ -65,8 +74,15 @@ namespace kirillova
         in.setstate(std::ios::failbit);
         break;
       }
+
       polygon.points.push_back(p);
     }
+
+    if (polygon.points.size() != n)
+    {
+      in.setstate(std::ios::failbit);
+    }
+
     return in;
   }
 

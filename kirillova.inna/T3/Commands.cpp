@@ -168,11 +168,11 @@ namespace kirillova
           int parity = (arguments == "EVEN") ? 0 : 1;
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
-            std::bind(
-              std::equal_to<>(),
-              std::bind(std::modulus<int>(), std::bind(getPolygonSize, _1), 2),
-              parity
-            )
+            [parity](const Polygon& p)
+            {
+              return p.points.size() >= 3 &&
+                (p.points.size() % 2 == parity);
+            }
           );
           std::cout << count << '\n';
         }
@@ -189,11 +189,10 @@ namespace kirillova
 
             auto count = std::count_if(
               polygons.begin(), polygons.end(),
-              std::bind(
-                std::equal_to<>(),
-                std::bind(getPolygonSize, _1),
-                vertices
-              )
+              [vertices](const Polygon& p)
+              {
+                return p.points.size() == static_cast<size_t>(vertices);
+              }
             );
             std::cout << count << '\n';
           }
@@ -245,7 +244,13 @@ namespace kirillova
           }
 
           auto predicate = std::bind(same_comparator, std::cref(target), std::placeholders::_1);
-          size_t result = std::count_if(polygons.cbegin(), polygons.cend(), predicate);
+          size_t result = std::count_if(
+            polygons.cbegin(), polygons.cend(),
+            [&predicate](const Polygon& p)
+            {
+              return p.points.size() >= 3 && predicate(p);
+            }
+          );
           std::cout << result << "\n";
         }
         catch (const std::invalid_argument& except)
