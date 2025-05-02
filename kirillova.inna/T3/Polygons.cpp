@@ -38,8 +38,19 @@ namespace kirillova
       return false;
     }
 
-    return std::is_permutation(
-      polygon.points.begin(), polygon.points.end(), other.points.begin());
+    int dx = other.points[0].x - polygon.points[0].x;
+    int dy = other.points[0].y - polygon.points[0].y;
+
+    for (size_t i = 1; i < polygon.points.size(); ++i)
+    {
+      if (other.points[i].x != polygon.points[i].x + dx ||
+          other.points[i].y != polygon.points[i].y + dy)
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   std::istream& operator>>(std::istream& in, Polygon& polygon)
@@ -48,7 +59,7 @@ namespace kirillova
     std::string line;
     if (!getline(in, line)) return in;
 
-    std::regex poly_re(R"(^\s*\d+(\s*\(\s*-?\d+\s*;\s*-?\d+\s*\)\s*)+$)");
+    std::regex poly_re(R"(^\s*(\d+)(\s*\(\s*(-?\d+)\s*;\s*(-?\d+)\s*\)\s*)+$)");
     if (!regex_match(line, poly_re))
     {
       in.setstate(std::ios::failbit);
@@ -76,7 +87,7 @@ namespace kirillova
       }
 
       polygon.points.push_back(p);
-    }
+      }
 
     if (polygon.points.size() != n)
     {
@@ -94,10 +105,7 @@ namespace kirillova
   std::ostream& operator<<(std::ostream& out, const Polygon& polygon)
   {
     out << polygon.points.size() << " ";
-    for (const auto& p : polygon.points)
-    {
-      out << p << " ";
-    }
+    for (const auto& p : polygon.points) out << p << " ";
     return out;
   }
 }
