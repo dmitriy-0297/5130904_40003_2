@@ -41,3 +41,4 @@ std::vector< float > getAllAreas(const std::vector< Polygon >& polygons, const i
 std::vector< int > getAllWithPredicator(const std::vector< Polygon >& polygons, const int& typeSum, const float& n = 1);
 
 #endif
+
