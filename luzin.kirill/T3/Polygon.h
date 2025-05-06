@@ -30,7 +30,8 @@ struct Polygon
   bool isEqualNumberOfPoint(const int& num) const;
   bool isIntersected(const Polygon& other) const;
 
-  friend bool inputPolygon(std::istream& stream, Polygon& polygon);
+  friend void inputPolygon(std::istream& stream, Polygon& polygon);
+  friend void inputPolygon(std::ifstream& stream, Polygon& polygon);
   friend std::istream& operator >> (std::istream& stream, Polygon& polygon);
   friend std::ostream& operator << (std::ostream& stream, const Polygon& polygon);
 };

@@ -2,48 +2,60 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <fstream>
 #include <numeric>
 #include <limits>
 
-#define ERROR_INVALID_INPUT "ERROR: Invalid input"
-#define ERROR_INVALID_FINISH_OF_STRING "ERROR: String must be finished with \\n"
+#define ERROR_INVALID_COMMAND "<INVALID COMMAND>\n"
 
 Polygon::Point Polygon::inputPoint(std::istream& stream)
 {
   Point point;
 
-  if(stream.get() != ' ')
+  if(stream.peek() == '\n' || stream.peek() == '\r' || stream.eof())
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
+  }
+
+  if(stream.peek() != ' ')
+  {
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
+  }
+
+  stream.get();
+
+  if(stream.peek() == '\n' || stream.peek() == '\r' || stream.eof())
+  {
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   if(stream.get() != '(')
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   stream >> point.x;
 
   if(stream.fail())
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   if(stream.get() != ';')
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   stream >> point.y;
 
   if(stream.fail())
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   if(stream.get() != ')')
   {
-    throw std::invalid_argument(ERROR_INVALID_INPUT);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
   return point;
@@ -55,8 +67,7 @@ void Polygon::readPoint(std::istream& stream, int n)
   {
     if (stream.peek() != '\r' && stream.peek() != '\n' && !stream.eof())
     {
-      std::cout << static_cast< int >(stream.peek());
-      throw std::invalid_argument(ERROR_INVALID_FINISH_OF_STRING);
+      throw std::invalid_argument(ERROR_INVALID_COMMAND);
     }
 
     return;
@@ -168,25 +179,16 @@ bool Polygon::checkIntersect(Point p1, Point q1, Point p2, Point q2) const
 }
 
 
-bool inputPolygon(std::istream& stream, Polygon& polygon)
+void inputPolygon(std::istream& stream, Polygon& polygon)
 {
   int count = 0;
   stream >> count;
 
-  try
+  if (count < 3)
   {
-    polygon.readPoint(stream, count);
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
-  catch(const std::invalid_argument& error)
-  {
-    std::cerr << error.what() << '\n';
-    polygon.points.clear();
-    stream.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-
-    inputPolygon(stream, polygon);
-  }
-
-  return true;
+  polygon.readPoint(stream, count);
 }
 
 std::istream& operator >> (std::istream& stream, Polygon& polygon)
@@ -210,7 +212,6 @@ std::ostream& operator << (std::ostream& stream, const Polygon& polygon)
 
     return stream;
 }
-
 
 bool Polygon::isOdd() const
 {
