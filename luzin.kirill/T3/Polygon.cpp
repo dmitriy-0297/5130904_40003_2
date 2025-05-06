@@ -114,11 +114,14 @@ bool Polygon::isIntersected(const Polygon& other) const
   return std::any_of(points.begin(), points.end(), [&](Point p)
   {
     j = 0;
+
     Point p1 = points[i++];
     Point q1 = points[(i) % points.size()];
 
     return std::any_of(other.points.begin(), other.points.end(), [&](Point q)
     {
+      p = p1;
+      q = q1;
       Point p2 = other.points[j++];
       Point q2 = other.points[(j) % other.points.size()];
 
@@ -283,13 +286,6 @@ std::vector< int > getAllWithPredicator(const std::vector< Polygon >& polygons, 
       polygons.end(),
       std::back_inserter(numbers),
       [](const Polygon& polygon) { return (polygon.isOdd() ? 1 : 0); });
-    break;
-
-  case ALL:
-    std::transform(polygons.begin(),
-      polygons.end(),
-      std::back_inserter(numbers),
-      [](const Polygon& polygon) { return 1; });
     break;
 
   case LESS_AREA:
