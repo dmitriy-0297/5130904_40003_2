@@ -5,8 +5,6 @@
 #include <numeric>
 #include <limits>
 
-using namespace std::placeholders;
-
 #define ERROR_INVALID_INPUT "ERROR: Invalid input"
 #define ERROR_INVALID_FINISH_OF_STRING "ERROR: String must be finished with \\n"
 
@@ -113,13 +111,17 @@ bool Polygon::isIntersected(const Polygon& other) const
   int i = 0;
   int j = 0;
 
-  return std::any_of(points.begin(), points.end(), [&](Point p) {
+  return std::any_of(points.begin(), points.end(), [&](Point p)
+  {
     j = 0;
     Point p1 = points[i++];
     Point q1 = points[(i) % points.size()];
-    return std::any_of(other.points.begin(), other.points.end(), [&](Point q) {
+
+    return std::any_of(other.points.begin(), other.points.end(), [&](Point q)
+    {
       Point p2 = other.points[j++];
       Point q2 = other.points[(j) % other.points.size()];
+
       return checkIntersect(p1, q1, p2, q2);
       });
     });
@@ -149,12 +151,12 @@ bool Polygon::checkIntersect(Point p1, Point q1, Point p2, Point q2) const
   int orientation3 = getOrientation(p2, q2, p1);
   int orientation4 = getOrientation(p2, q2, q1);
 
-  if (orientation1 != orientation2 && orientation3 != orientation4) 
+  if (orientation1 != orientation2 && orientation3 != orientation4)
   {
     return true;
   }
 
-  if (orientation1 == 0 || orientation2 == 0 || orientation3 == 0 || orientation4 == 0) 
+  if (orientation1 == 0 || orientation2 == 0 || orientation3 == 0 || orientation4 == 0)
   {
     return true;
   }

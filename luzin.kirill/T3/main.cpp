@@ -5,12 +5,15 @@
 #include <fstream>
 #include <string>
 #include <numeric>
+#include <iomanip>
 
 #include "Polygon.h"
 
 #define ERROR_INVALID_COMMAND "<INVALID COMMAND>"
 #define ERROR_MISSING_FILE "ERROR: Missing file"
 #define ERROR_ENOUGH_POLYGONS "ERROR: Not enough polygons"
+
+#define PRECISION 1
 
 void readFile(const char* fileName, std::vector< Polygon >& polygons);
 void readCommand(const std::vector< Polygon >& polygons);
@@ -61,7 +64,7 @@ void readCommand(const std::vector< Polygon >& polygons)
 {
   std::string command;
   std::cin >> command;
-  
+
   if (command == "AREA")
   {
     std::vector< float > areas;
@@ -102,7 +105,7 @@ void readCommand(const std::vector< Polygon >& polygons)
       sum = sum / polygons.size();
     }
 
-    std::cout << sum;
+    std::cout << std::fixed << std::setprecision(PRECISION) << sum;
   }
   else if (command == "MAX")
   {
@@ -118,7 +121,7 @@ void readCommand(const std::vector< Polygon >& polygons)
       std::vector< float > areas;
 
       areas = getAllAreas(polygons, ALL);
-      std::cout << *std::max_element(areas.begin(), areas.end());
+      std::cout << std::fixed << std::setprecision(PRECISION) << *std::max_element(areas.begin(), areas.end());
     }
     else if (command == "VERTEXES")
     {
@@ -150,7 +153,7 @@ void readCommand(const std::vector< Polygon >& polygons)
       std::vector< float > areas;
 
       areas = getAllAreas(polygons, ALL);
-      std::cout << *std::min_element(areas.begin(), areas.end());
+      std::cout << std::fixed << std::setprecision(PRECISION) << *std::min_element(areas.begin(), areas.end());
     }
     else if (command == "VERTEXES")
     {
@@ -200,7 +203,7 @@ void readCommand(const std::vector< Polygon >& polygons)
     std::cin >> poly;
 
     std::vector< int > polygonsWIthLessArea;
-    
+
     polygonsWIthLessArea = getAllWithPredicator(polygons, LESS_AREA, poly.getArea());
 
     std::cout << std::accumulate(polygonsWIthLessArea.begin(), polygonsWIthLessArea.end(), 0);
