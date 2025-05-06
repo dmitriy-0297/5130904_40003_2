@@ -19,8 +19,6 @@ struct Polygon
 
   std::vector< Point > points;
 
-  Polygon() {};
-
   void readPoint(std::istream& stream, int n);
   Point inputPoint(std::istream& stream);
   int getNumberPoints() const;
@@ -37,8 +35,10 @@ struct Polygon
   friend std::ostream& operator << (std::ostream& stream, const Polygon& polygon);
 };
 
-std::vector< float > getAllAreas(const std::vector< Polygon >& polygons, const int& typeSum, const int& n = 1);
-std::vector< int > getAllWithPredicator(const std::vector< Polygon >& polygons, const int& typeSum, const float& n = 1);
+std::vector< float > getAllAreas(const std::vector< Polygon >& polygons,
+  const int& typeSum, const int& n = 1);
+
+std::vector< int > getAllWithPredicator(const std::vector< Polygon >& polygons,
+  const int& typeSum, const float& n = 1);
 
 #endif
-
