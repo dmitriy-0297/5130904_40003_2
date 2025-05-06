@@ -14,7 +14,7 @@ struct Polygon
 {
   struct Point
   {
-	  int x, y;
+    int x, y;
   };
 
   std::vector< Point > points;
