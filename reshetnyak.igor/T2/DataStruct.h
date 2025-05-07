@@ -14,11 +14,12 @@
 
 const std::regex REGEX_SLL_LIT(R"(^[-]?([0]|[1-9][0-9]*)(ll|LL)$)");
 const std::regex REGEX_CMP_LSP(R"(^#c\(([-]?\d+\.\d+)\s([-]?\d+\.\d+)\)$)");
+const int LENGTH_OF_LABEL = 4;
 
 struct DataStruct
 {
-    long long key1;
-    std::complex<double> key2;
+    long long key1 = 0;
+    std::complex<double> key2{ 0.0, 0.0 };
     std::string key3;
 };
 
