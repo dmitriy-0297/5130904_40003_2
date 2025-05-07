@@ -58,7 +58,7 @@ void readFile(const char* fileName, std::vector< Polygon >& polygons)
     throw std::logic_error(ERROR_MISSING_FILE);
   }
 
-  while (!inputFile.eof())
+  while (!inputFile.eof() && inputFile.peek() != EOF)
   {
     try
     {

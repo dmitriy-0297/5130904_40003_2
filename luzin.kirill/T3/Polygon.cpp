@@ -12,7 +12,7 @@ Polygon::Point Polygon::inputPoint(std::istream& stream)
 {
   Point point;
 
-  if(stream.peek() == '\n' || stream.peek() == '\r' || stream.eof())
+  if(stream.peek() == '\n' || stream.peek() == '\r' || stream.peek() == EOF)
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
@@ -21,7 +21,6 @@ Polygon::Point Polygon::inputPoint(std::istream& stream)
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
-
   stream.get();
 
   if(stream.peek() == '\n' || stream.peek() == '\r' || stream.eof())
@@ -29,34 +28,48 @@ Polygon::Point Polygon::inputPoint(std::istream& stream)
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
-  if(stream.get() != '(')
+  if(stream.peek() != '(')
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
+  stream.get();
 
+  if (!std::isdigit(stream.peek()) && stream.peek() != '-')
+  {
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
+  }
   stream >> point.x;
 
   if(stream.fail())
   {
+    stream.setstate(std::ios_base::goodbit);
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
-  if(stream.get() != ';')
+  if(stream.peek() != ';')
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
+  stream.get();
 
+
+  if (!std::isdigit(stream.peek()) && stream.peek() != '-')
+  {
+    throw std::invalid_argument(ERROR_INVALID_COMMAND);
+  }
   stream >> point.y;
 
   if(stream.fail())
   {
+    stream.setstate(std::ios_base::goodbit);
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
 
-  if(stream.get() != ')')
+  if(stream.peek() != ')')
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
+  stream.get();
 
   return point;
 }
@@ -182,12 +195,28 @@ bool Polygon::checkIntersect(Point p1, Point q1, Point p2, Point q2) const
 void inputPolygon(std::istream& stream, Polygon& polygon)
 {
   int count = 0;
+
+  if (stream.peek() == '\n' || stream.peek() == '\r')
+  {
+    stream.get();
+
+    if (!std::isdigit(stream.peek()))
+    {
+      throw std::invalid_argument(ERROR_INVALID_COMMAND);
+    }
+  }
+  else if (stream.peek() == EOF)
+  {
+    stream.setstate(std::ios_base::eofbit);
+  }
+
   stream >> count;
 
   if (count < 3)
   {
     throw std::invalid_argument(ERROR_INVALID_COMMAND);
   }
+
   polygon.readPoint(stream, count);
 }
 
