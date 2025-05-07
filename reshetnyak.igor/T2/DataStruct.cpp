@@ -50,7 +50,8 @@ std::istream& operator>>(std::istream& in, LabelIO& data)
 
     std::string s = "";
     in >> s;
-    bool invalidInput = in.eof() || s.length() != LENGTH_OF_LABEL; // Заменил 4 на переменную типа const int LENGTH_OF_LABEL = 4, которую проинициализировал в файле DataStruct.h 
+    // Заменил 4 на переменную типа const int LENGTH_OF_LABEL = 4, которую проинициализировал в файле DataStruct.h
+    bool invalidInput = in.eof() || s.length() != LENGTH_OF_LABEL;
     if (!invalidInput) {
         invalidInput = s.substr(0, 3) != "key" || !std::isdigit(s[3]);
     }
@@ -180,6 +181,6 @@ bool compare(const DataStruct& a, const DataStruct& b)
     if (std::abs(a.key2) != std::abs(b.key2)) {
         return std::abs(a.key2) < std::abs(b.key2);
     }
-
-    return a.key3.length() < b.key3.length(); // Заменил size на length. в задании требуется сортировать "По возрастанию длины строки key3, если прочие поля равны"
+    // Заменил size на length. в задании требуется сортировать "По возрастанию длины строки key3, если прочие поля равны"
+    return a.key3.length() < b.key3.length();
 }
