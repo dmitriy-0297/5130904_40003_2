@@ -87,9 +87,17 @@ namespace kirillova
       }
 
       polygon.points.push_back(p);
-      }
+    }
 
     if (polygon.points.size() != n)
+    {
+      in.setstate(std::ios::failbit);
+    }
+
+    std::vector<Point>& pts = polygon.points;
+
+    std::sort(pts.begin(), pts.end());
+    if (std::unique(pts.begin(), pts.end()) != pts.end())
     {
       in.setstate(std::ios::failbit);
     }
