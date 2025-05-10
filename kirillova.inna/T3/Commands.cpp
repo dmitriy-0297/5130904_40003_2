@@ -171,7 +171,7 @@ namespace kirillova
           [parity](const Polygon& p)
           {
             return p.points.size() >= 3 &&
-              (p.points.size() % 2 == parity);
+              (static_cast<std::size_t>(parity) == p.points.size() % 2);
           }
         );
         std::cout << count << '\n';

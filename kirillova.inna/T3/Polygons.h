@@ -20,6 +20,7 @@ namespace kirillova
   {
     int x, y;
     bool operator==(const Point& other) const;
+    bool operator<(const Point& other) const;
   };
 
   struct Polygon
