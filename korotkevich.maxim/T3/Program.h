@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PROGRAM_H
+#define PROGRAM_H
+
 #include <vector>
 #include <iostream>
 
@@ -30,3 +32,5 @@ void getMaxSequence(const std::vector<Polygon>& figures, std::istream& input);
 
 std::vector<Polygon> readPolygonsFromFile(const char* filename);
 void processCommands(const std::vector<Polygon>& all);
+
+#endif

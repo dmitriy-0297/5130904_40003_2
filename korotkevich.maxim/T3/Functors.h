@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FUNCTORS_H
+#define FUNCTORS_H
+
 #include "Program.h"
 
 #include <vector>
@@ -83,3 +85,5 @@ struct MaxSeqAccumulator
       return st;
   }
 };
+
+#endif

@@ -218,13 +218,11 @@ void getPolygonsLessArea(const std::vector<Polygon>& figures, std::istream& inpu
     return;
   }
 
-  double targetArea = polygonArea(polygon);
-
   std::vector<bool> lessFlags(figures.size());
   std::transform(
     figures.begin(),
     figures.end(),
-      lessFlags.begin(),
+    lessFlags.begin(),
     AreaLess(polygon)
   );
 
