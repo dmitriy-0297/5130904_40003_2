@@ -274,16 +274,30 @@ std::vector<Polygon> readPolygonsFromFile(const char* filename)
   std::ifstream fin(filename);
   if (!fin)
   {
-    std::cerr << "Error: cannot open file '" << filename << "'\n";
-    std::exit(EXIT_FAILURE);
+    std::cerr << "Error: cannot open file" << '\n';
+    std::exit(1);
   }
-  std::vector<Polygon> all;
-  std::copy(
-    std::istream_iterator<Polygon>(fin),
-    std::istream_iterator<Polygon>(),
-    std::back_inserter(all)
-  );
-  return all;
+
+  std::vector<Polygon> result;
+  std::string line;
+
+  while (std::getline(fin, line))
+  {
+    if (line.empty()) continue;
+
+    std::istringstream iss(line);
+    Polygon p;
+
+    if (!(iss >> p)) continue;
+
+
+    std::string extra;
+    if (iss >> extra) continue;
+
+    result.push_back(std::move(p));
+  }
+
+  return result;
 }
 
 void processCommands(const std::vector<Polygon>& all)
