@@ -18,6 +18,7 @@ double polygonArea(const Polygon& poly);
 bool arePolygonsEqual(const Polygon& a, const Polygon& b);
 
 std::istream& operator>>(std::istream& in, Polygon& poly);
+std::istream& operator>>(std::istream& in, Point& point);
 void processAreaEvenOdd(const std::vector<Polygon>& figures, bool even);
 void processAreaMean(const std::vector<Polygon>& all);
 void processAreaVertexCount(const std::vector<Polygon>& figures, int v);

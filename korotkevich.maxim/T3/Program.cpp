@@ -59,52 +59,59 @@ bool arePolygonsEqual(const Polygon& a, const Polygon& b)
 }
 
 
+std::istream& operator>>(std::istream& in, Point& point)
+{
+  std::istream::sentry sentry(in);
+  if (!sentry)
+    return in;
+
+  std::string token;
+  in >> token;
+
+  static const std::regex pattern(R"(\((-?\d+);(-?\d+)\))");
+  std::smatch match;
+
+  if (!std::regex_match(token, match, pattern))
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+
+  point.x = std::stoi(match[1]);
+  point.y = std::stoi(match[2]);
+
+  return in;
+}
+
 std::istream& operator>>(std::istream& in, Polygon& poly)
 {
- std::istream::sentry sentry(in);
- if (!sentry)
- {
-   return in;
- }
+  std::istream::sentry sentry(in);
+  if (!sentry)
+    return in;
 
-  std::string line;
-  std::getline(in, line);
-  std::istringstream iss(line);
+  poly.points.clear();
+  std::size_t n = 0;
+  in >> n;
 
-  int count;
-  if (!(iss >> count) || count < 3)
+  if (in.fail() || n < 3)
   {
     in.setstate(std::ios::failbit);
     return in;
   }
 
-  std::vector<Point> points;
-  points.reserve(count);
+  poly.points.reserve(n);
 
-  std::string rest;
-  std::getline(iss, rest);
-
-  static const std::regex point_regex(R"(\((-?\d+);(-?\d+)\))");
-  auto begin = std::sregex_iterator(rest.begin(), rest.end(), point_regex);
-  auto end = std::sregex_iterator();
-
-  for (auto it = begin; it != end; ++it)
+  for (std::size_t i = 0; i < n; ++i)
   {
-    if (points.size() >= static_cast<size_t>(count))
-      break;
-
-    int x = std::stoi((*it)[1]);
-    int y = std::stoi((*it)[2]);
-    points.push_back({ x, y });
+    Point p;
+    if (!(in >> p))
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+      poly.points.push_back(p);
   }
 
-  if (points.size() != static_cast<size_t>(count))
-  {
-    in.setstate(std::ios::failbit);
-    return in;
-  }
-
-  poly.points = std::move(points);
   return in;
 }
 
@@ -217,6 +224,11 @@ void getPolygonsLessArea(const std::vector<Polygon>& figures, std::istream& inpu
     std::cout << "<INVALID COMMAND>\n";
     return;
   }
+  std::string extra;
+  if (input >> extra) {
+    std::cout << "<INVALID COMMAND>\n";
+    return;
+  }
 
   std::vector<bool> lessFlags(figures.size());
   std::transform(
@@ -239,6 +251,11 @@ void getMaxSequence(const std::vector<Polygon>& figures, std::istream& input)
   {
     std::cout << "<INVALID COMMAND>\n";
     return;
+  }
+  std::string extra;
+  if (input >> extra) {
+      std::cout << "<INVALID COMMAND>\n";
+      return;
   }
 
   SequenceInfo init{ 0, 0 };
@@ -271,25 +288,32 @@ std::vector<Polygon> readPolygonsFromFile(const char* filename)
 
 void processCommands(const std::vector<Polygon>& all)
 {
+  std::string line;
+  if (!std::getline(std::cin, line))
+     return;
+
+  if (line.empty())
+    return processCommands(all);
+
+  std::istringstream iss(line);
   std::string cmd, param;
-  if (!(std::cin >> cmd >> param))
-  {
-    return;
-  }
+  iss >> cmd >> param;
 
   if (cmd == "MIN")
   {
-    if (all.empty())
+    if (param == "AREA")
     {
-      std::cout << "<INVALID COMMAND>\n";
-    }
-    else if (param == "AREA")
-    {
-      std::cout << std::fixed << std::setprecision(1) << getMinArea(all) << "\n";
+      if (all.empty())
+        std::cout << "<INVALID COMMAND>\n";
+      else
+        std::cout << std::fixed << std::setprecision(1) << getMinArea(all) << "\n";
     }
     else if (param == "VERTEXES")
     {
-      std::cout << getMinVertexes(all) << "\n";
+      if (all.empty())
+        std::cout << "<INVALID COMMAND>\n";
+      else
+        std::cout << getMinVertexes(all) << "\n";
     }
     else
     {
@@ -317,7 +341,6 @@ void processCommands(const std::vector<Polygon>& all)
       std::cout << "<INVALID COMMAND>\n";
     }
   }
-
   else if (cmd == "COUNT")
   {
     if (param == "EVEN")
@@ -328,17 +351,19 @@ void processCommands(const std::vector<Polygon>& all)
     {
       std::cout << countEvenOdd(all, false) << "\n";
     }
-    else if (std::all_of(param.begin(), param.end(), ::isdigit))
+    else if (!param.empty() && std::all_of(param.begin(), param.end(), ::isdigit))
     {
       int v = std::stoi(param);
-      std::cout << countByVertexCount(all, v) << "\n";
+      if (v < 3)
+        std::cout << "<INVALID COMMAND>\n";
+      else
+        std::cout << countByVertexCount(all, v) << "\n";
     }
     else
     {
       std::cout << "<INVALID COMMAND>\n";
     }
   }
-
   else if (cmd == "AREA")
   {
     if (param == "EVEN")
@@ -353,7 +378,7 @@ void processCommands(const std::vector<Polygon>& all)
     {
       processAreaMean(all);
     }
-    else if (std::all_of(param.begin(), param.end(), ::isdigit))
+    else if (!param.empty() && std::all_of(param.begin(), param.end(), ::isdigit))
     {
       processAreaVertexCount(all, std::stoi(param));
     }
@@ -362,27 +387,37 @@ void processCommands(const std::vector<Polygon>& all)
       std::cout << "<INVALID COMMAND>\n";
     }
   }
-
   else if (cmd == "LESSAREA")
   {
-    std::string line;
-    std::getline(std::cin, line);
-    std::istringstream iss(param + " " + line);
-    getPolygonsLessArea(all, iss);
+    if (param.empty())
+    {
+      std::cout << "<INVALID COMMAND>\n";
+    }
+    else
+    {
+      std::string rest;
+      std::getline(iss, rest);
+      std::istringstream sub(param + " " + rest);
+      getPolygonsLessArea(all, sub);
+    }
   }
   else if (cmd == "MAXSEQ")
   {
-    std::string line;
-    std::getline(std::cin, line);
-    std::istringstream iss(param + " " + line);
-    getMaxSequence(all, iss);
+    if (param.empty())
+    {
+      std::cout << "<INVALID COMMAND>\n";
+    }
+    else
+    {
+      std::string rest;
+      std::getline(iss, rest);
+      std::istringstream sub(param + " " + rest);
+      getMaxSequence(all, sub);
+    }
   }
   else
   {
     std::cout << "<INVALID COMMAND>\n";
-    std::string skip;
-    std::getline(std::cin, skip);
   }
-
-  processCommands(all);
+    processCommands(all);
 }
