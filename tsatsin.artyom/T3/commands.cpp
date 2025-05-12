@@ -1,5 +1,3 @@
-// This is a test change in commands.cpp
-
 #include "commands.h"
 #include <string>
 #include <algorithm>
