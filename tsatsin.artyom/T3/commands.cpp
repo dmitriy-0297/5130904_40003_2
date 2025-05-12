@@ -170,7 +170,7 @@ namespace artemonts
     {
         Polygon target;
         in >> target;
-        if (!in || target.points.size() < 3)
+        if (!target.points.size() < 3)
         {
             invalid(out);
             return;
