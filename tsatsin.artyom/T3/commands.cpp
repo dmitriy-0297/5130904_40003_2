@@ -172,7 +172,7 @@ namespace artemonts
         in >> target;
         if (target.points.size() < 3)
         {
-            invalid(out);
+            out << "<INVALID COMMAND>\n";
             return;
         }
         size_t best = 0;
