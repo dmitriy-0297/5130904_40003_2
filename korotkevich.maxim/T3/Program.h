@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-struct Point 
+struct Point
 {
   int x, y;
 };

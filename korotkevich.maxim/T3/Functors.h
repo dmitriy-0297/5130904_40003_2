@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 
-struct VertexCountAreaAccumulator 
+struct VertexCountAreaAccumulator
 {
   int vertexCount;
   VertexCountAreaAccumulator(int count) : vertexCount(count) {}

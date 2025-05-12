@@ -62,7 +62,7 @@ bool arePolygonsEqual(const Polygon& a, const Polygon& b)
 std::istream& operator>>(std::istream& in, Polygon& poly)
 {
  std::istream::sentry sentry(in);
- if (!sentry) 
+ if (!sentry)
  {
    return in;
  }
@@ -314,7 +314,7 @@ void processCommands(const std::vector<Polygon>& all)
       else
         std::cout << getMaxVertexes(all) << "\n";
     }
-    else 
+    else
     {
       std::cout << "<INVALID COMMAND>\n";
     }
@@ -335,7 +335,7 @@ void processCommands(const std::vector<Polygon>& all)
       int v = std::stoi(param);
       std::cout << countByVertexCount(all, v) << "\n";
     }
-    else 
+    else
     {
       std::cout << "<INVALID COMMAND>\n";
     }
@@ -359,7 +359,7 @@ void processCommands(const std::vector<Polygon>& all)
     {
       processAreaVertexCount(all, std::stoi(param));
     }
-    else 
+    else
     {
       std::cout << "<INVALID COMMAND>\n";
     }
