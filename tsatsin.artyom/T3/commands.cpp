@@ -138,7 +138,7 @@ namespace artemonts
         try
         {
             size_t n = std::stoul(arg);
-            if (!isValidVertexCount(n))
+            if (n < 3)
             {
                 invalid(out);
                 return;
@@ -170,7 +170,7 @@ namespace artemonts
     {
         Polygon target;
         in >> target;
-        if (!target.points.size() < 3)
+        if (target.points.size() < 3)
         {
             invalid(out);
             return;
