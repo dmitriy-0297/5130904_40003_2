@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iomanip>
+#include <set>
 
 namespace kirillova
 {

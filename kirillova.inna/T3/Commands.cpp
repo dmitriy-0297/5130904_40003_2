@@ -23,6 +23,7 @@ namespace kirillova
     if (cmd == "COUNT") return TypeOfCommand::COUNT;
     if (cmd == "LESSAREA") return TypeOfCommand::LESSAREA;
     if (cmd == "SAME") return TypeOfCommand::SAME;
+
     return TypeOfCommand::INVALID;
   }
 
@@ -98,7 +99,7 @@ namespace kirillova
             );
             std::cout << std::fixed << std::setprecision(1) << sum << '\n';
           }
-          catch (const std::invalid_argument&)
+          catch (const std::invalid_argument& except)
           {
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           }
@@ -170,7 +171,7 @@ namespace kirillova
             [parity](const Polygon& p)
             {
               return p.points.size() >= 3 &&
-                     (p.points.size() % 2 == parity);
+                (p.points.size() % 2 == static_cast<size_t>(parity));
             }
           );
           std::cout << count << '\n';
@@ -195,7 +196,7 @@ namespace kirillova
             );
             std::cout << count << '\n';
           }
-          catch (const std::invalid_argument&)
+          catch (const std::invalid_argument& except)
           {
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           }
@@ -224,7 +225,7 @@ namespace kirillova
           );
           std::cout << count << '\n';
         }
-        catch (const std::invalid_argument&)
+        catch (const std::invalid_argument& except)
         {
           std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
@@ -252,7 +253,7 @@ namespace kirillova
           );
           std::cout << result << "\n";
         }
-        catch (const std::invalid_argument&)
+        catch (const std::invalid_argument& except)
         {
           std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
