@@ -282,7 +282,14 @@ void commandLine(std::string& stream, std::vector<Polygon>& figures, std::string
                         std::cout << countArea(figures, ODD) << '\n';
                         break;
                     case MEAN:
-                        std::cout << countArea(figures, MEAN) << '\n';
+                        if (figures.size() > 0)
+                        {
+                            std::cout << countArea(figures, MEAN) << '\n';
+                        }
+                        else
+                        {
+                            std::cout << BAD_COMMAND << '\n';
+                        }
                         break;
                     default:
                         std::cout << BAD_COMMAND << '\n';
@@ -296,7 +303,7 @@ void commandLine(std::string& stream, std::vector<Polygon>& figures, std::string
             iss >> option;
             opt = getOption(option);
 
-            if (opt == AREA || opt == VERTEXES)
+            if (figures.size() > 0 && (opt == AREA || opt == VERTEXES))
             {
                 maxAreaVertexes(figures, opt, std::cout);
                 break;
@@ -308,7 +315,7 @@ void commandLine(std::string& stream, std::vector<Polygon>& figures, std::string
             iss >> option;
             opt = getOption(option);
 
-            if (opt == AREA || opt == VERTEXES)
+            if (figures.size() > 0 && (opt == AREA || opt == VERTEXES))
             {
                 minAreaVertexes(figures, opt, std::cout);
                 break;
@@ -449,7 +456,7 @@ double countArea(const std::vector<Polygon>& figures, const int& option)
     case MEAN:
         area = std::accumulate(figures.cbegin(), figures.cend(), 0.0, [](double acc, const Polygon& poly) {
             return acc + countShoelaceArea(poly);
-            }) / figures.size();
+        }) / figures.size();
         return area;
     default:
         auto checkSize = [&option](const Polygon& poly) {
