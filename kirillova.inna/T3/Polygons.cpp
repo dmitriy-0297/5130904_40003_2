@@ -9,12 +9,20 @@ namespace kirillova
 
   bool Point::operator<(const Point& other) const
   {
-    return (x < other.x) || (x == other.x && y < other.y);
+    return std::tie(x, y) < std::tie(other.x, other.y);
   }
 
   bool Polygon::operator==(const Polygon& other) const
   {
-    return points == other.points;
+    if (points.size() != other.points.size())
+    {
+      return false;
+    }
+
+    std::multiset<Point> thisPoints(points.begin(), points.end());
+    std::multiset<Point> otherPoints(other.points.begin(), other.points.end());
+
+    return thisPoints == otherPoints;
   }
 
   double getPolygonsArea(const Polygon& polygon)
@@ -62,10 +70,7 @@ namespace kirillova
   {
     polygon.points.clear();
     std::string line;
-    if (!getline(in, line)) return in;
-
-    std::regex poly_re(R"(^\s*(\d+)(\s*\(\s*(-?\d+)\s*;\s*(-?\d+)\s*\)\s*)+$)");
-    if (!regex_match(line, poly_re))
+    if (!std::getline(in, line))
     {
       in.setstate(std::ios::failbit);
       return in;
@@ -73,9 +78,7 @@ namespace kirillova
 
     std::istringstream iss(line);
     size_t n;
-    iss >> n;
-
-    if (n < 3)
+    if (!(iss >> n) || n < 3)
     {
       in.setstate(std::ios::failbit);
       return in;
@@ -83,26 +86,18 @@ namespace kirillova
 
     for (size_t i = 0; i < n; ++i)
     {
-      Point p;
       char c1, c2, c3;
+      Point p;
       if (!(iss >> c1 >> p.x >> c2 >> p.y >> c3) || c1 != '(' || c2 != ';' || c3 != ')')
       {
         in.setstate(std::ios::failbit);
-        break;
+        return in;
       }
-
       polygon.points.push_back(p);
     }
 
-    if (polygon.points.size() != n)
-    {
-      in.setstate(std::ios::failbit);
-    }
-
-    std::vector<Point>& pts = polygon.points;
-
-    std::sort(pts.begin(), pts.end());
-    if (std::unique(pts.begin(), pts.end()) != pts.end())
+    std::string remaining;
+    if (iss >> remaining)
     {
       in.setstate(std::ios::failbit);
     }
@@ -118,7 +113,10 @@ namespace kirillova
   std::ostream& operator<<(std::ostream& out, const Polygon& polygon)
   {
     out << polygon.points.size() << " ";
-    for (const auto& p : polygon.points) out << p << " ";
+    for (const auto& p : polygon.points)
+    {
+      out << p << " ";
+    }
     return out;
   }
 }
