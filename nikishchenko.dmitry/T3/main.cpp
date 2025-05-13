@@ -695,3 +695,4 @@ vecArr same::computeVectors(const std::vector<Point>& points, bool reverse = fal
 
     return result;
 }
+
