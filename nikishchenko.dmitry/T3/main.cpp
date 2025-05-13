@@ -545,7 +545,11 @@ int countFigures(const std::vector<Polygon>& figures, const int& option)
     }
     else
     {
-        res = std::count_if(figures.cbegin(), figures.cend(), [&](const Polygon& poly) { return (poly.points.size() == static_cast<size_t>(option)); });
+        res = std::count_if(figures.cbegin(), figures.cend(), [&](const Polygon& poly)
+            {
+                return (poly.points.size() == static_cast<size_t>(option));
+            }
+        );
     }
     return res;
 }
