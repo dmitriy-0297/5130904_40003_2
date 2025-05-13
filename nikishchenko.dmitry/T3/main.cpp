@@ -202,7 +202,6 @@ int main(int args, char* argVector[])
     std::string option;
     std::string stream;
     int opt = 0;
-    double result = 0;
 
     input(fileInput, figures);
     commandLine(stream, figures, option, opt);
@@ -454,7 +453,7 @@ double countArea(const std::vector<Polygon>& figures, const int& option)
         return area;
     default:
         auto checkSize = [&option](const Polygon& poly) {
-            return poly.points.size() == option;
+            return poly.points.size() == static_cast<size_t>(option);
             };
 
         area = std::accumulate(
@@ -484,11 +483,6 @@ void maxAreaVertexes(const std::vector<Polygon>& figures, const int& option, std
     }
     else
     {
-        auto getSize = std::bind(
-            &std::vector<Point>::size,
-            std::bind(&Polygon::points, _1)
-        );
-
         auto comparator = std::bind(
             std::less<size_t>(),
             std::bind(
@@ -521,11 +515,6 @@ void minAreaVertexes(const std::vector<Polygon>& figures, const int& option, std
     }
     else
     {
-        auto getSize = std::bind(
-            &std::vector<Point>::size,
-            std::bind(&Polygon::points, _1)
-        );
-
         auto comparator = std::bind(
             std::less<size_t>(),
             std::bind(
@@ -556,7 +545,7 @@ int countFigures(const std::vector<Polygon>& figures, const int& option)
     }
     else
     {
-        res = std::count_if(figures.cbegin(), figures.cend(), [&](const Polygon& poly) { return (poly.points.size() == option); });
+        res = std::count_if(figures.cbegin(), figures.cend(), [&](const Polygon& poly) { return (poly.points.size() == static_cast<size_t>(option)); });
     }
     return res;
 }
@@ -695,4 +684,3 @@ vecArr same::computeVectors(const std::vector<Point>& points, bool reverse = fal
 
     return result;
 }
-
