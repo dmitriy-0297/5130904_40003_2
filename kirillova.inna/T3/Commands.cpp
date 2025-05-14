@@ -195,7 +195,6 @@ namespace kirillova
           if (!isValidVertexCount(vertices))
           {
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
-            return;
           }
 
           auto count = std::count_if(
