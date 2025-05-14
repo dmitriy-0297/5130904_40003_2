@@ -168,16 +168,21 @@ namespace artemonts
     static void doMaxSeqCommand(const std::vector<Polygon>& polys,
         std::istream& in, std::ostream& out)
     {
+        std::streampos pos = in.tellg();
         Polygon target;
-        in >> target;
-        if (target.points.size() < 3)
+        if (!(in >> target) || target.points.size() < 3)
         {
+            in.clear();
+            in.seekg(pos);
+            in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             out << "<INVALID COMMAND>\n";
             return;
         }
+
         size_t best = 0;
         size_t cur = 0;
-        for (auto& p : polys)
+        for (const auto& p : polys)
+        {
             if (p == target)
             {
                 ++cur;
@@ -187,8 +192,10 @@ namespace artemonts
             {
                 cur = 0;
             }
+        }
         out << best << '\n';
     }
+
 
     std::map<std::string, std::function<void(std::istream&, std::ostream&)>>
         makeCommands(const std::vector<Polygon>& polys)

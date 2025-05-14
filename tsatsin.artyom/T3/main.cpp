@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include <iterator>
 #include <limits>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "geometry.h"
@@ -26,11 +26,19 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::vector<Polygon> polygons{
-      std::istream_iterator<Polygon>{file},
-      std::istream_iterator<Polygon>{}
-    };
+    std::vector<Polygon> polygons;
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.empty())
+            continue;
+        std::istringstream iss(line);
+        Polygon poly;
+        if (iss >> poly && iss >> std::ws && iss.eof() && poly.points.size() >= 3)
+            polygons.emplace_back(std::move(poly));
+    }
     file.close();
+
 
     auto cmds = artemonts::makeCommands(polygons);
 
