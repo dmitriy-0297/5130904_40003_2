@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <sstream>
 
 namespace artemonts
 {
@@ -170,25 +171,32 @@ namespace artemonts
     static void doMaxSeqCommand(const std::vector<Polygon>& polys,
         std::istream& in, std::ostream& out)
     {
-        std::streampos pos = in.tellg();
+        std::string rest;
+        std::getline(in >> std::ws, rest);
+        std::istringstream iss(rest);
+
         Polygon target;
-        if (!(in >> target) || target.points.size() < 3)
+        if (!(iss >> target))
         {
-            in.clear();
-            in.seekg(pos);
-            in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             out << "<INVALID COMMAND>\n";
             return;
         }
 
-        size_t best = 0;
-        size_t cur = 0;
+        iss >> std::ws;
+        if (!iss.eof() || target.points.size() < 3)
+        {
+            out << "<INVALID COMMAND>\n";
+            return;
+        }
+
+        size_t best = 0, cur = 0;
         for (const auto& p : polys)
         {
             if (p == target)
             {
                 ++cur;
-                best = std::max(best, cur);
+                if (cur > best)
+                    best = cur;
             }
             else
             {
@@ -197,6 +205,7 @@ namespace artemonts
         }
         out << best << '\n';
     }
+
 
 
     std::map<std::string, std::function<void(std::istream&, std::ostream&)>>
