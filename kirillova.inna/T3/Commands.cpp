@@ -176,7 +176,7 @@ namespace kirillova
             return p.points.size() % 2 == 0;
           }
         );
-        std::cout << count << '\n';
+        std::cout << count + 1 << '\n';
       }
       else if (arguments == "ODD")
       {
@@ -187,7 +187,7 @@ namespace kirillova
             return p.points.size() % 2 != 0;
           }
         );
-        std::cout << count << '\n';
+        std::cout << count + 1 << '\n';
       }
       else if (isNumber(arguments))
       {
@@ -206,7 +206,7 @@ namespace kirillova
               return p.points.size() == static_cast<size_t>(vertices);
             }
           );
-          std::cout << count << '\n';
+          std::cout << count + 1 << '\n';
         }
       }
       else
