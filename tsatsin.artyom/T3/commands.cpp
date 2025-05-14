@@ -1,6 +1,8 @@
 #include "commands.h"
 #include <string>
 #include <algorithm>
+#include <functional>
+#include <limits>
 
 namespace artemonts
 {
