@@ -23,7 +23,6 @@ namespace kirillova
     if (cmd == "COUNT") return TypeOfCommand::COUNT;
     if (cmd == "LESSAREA") return TypeOfCommand::LESSAREA;
     if (cmd == "SAME") return TypeOfCommand::SAME;
-
     return TypeOfCommand::INVALID;
   }
 
@@ -99,7 +98,7 @@ namespace kirillova
             );
             std::cout << std::fixed << std::setprecision(1) << sum << '\n';
           }
-          catch (const std::invalid_argument& except)
+          catch (const std::invalid_argument&)
           {
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
           }
@@ -163,43 +162,52 @@ namespace kirillova
         break;
 
       case TypeOfCommand::COUNT:
-        if (arguments == "EVEN" || arguments == "ODD")
+        try
         {
-          int parity = (arguments == "EVEN") ? 0 : 1;
+          int vertices = std::stoi(arguments);
+          if (!isValidVertexCount(vertices))
+          {
+            std::cout << ERROR_OF_WRONG_COMMAND << "\n";
+            return;
+          }
+
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
-            [parity](const Polygon& p)
+            [vertices](const Polygon& p)
             {
-              return p.points.size() >= 3 &&
-                (p.points.size() % 2 == static_cast<size_t>(parity));
+              return p.points.size() == static_cast<size_t>(vertices);
+            }
+          );
+          std::cout << count << '\n';
+          break;
+        }
+        catch (const std::invalid_argument&) {}
+
+        if (arguments == "EVEN")
+        {
+          auto count = std::count_if(
+            polygons.begin(), polygons.end(),
+            [](const Polygon& p)
+            {
+              return p.points.size() % 2 == 0;
+            }
+          );
+          std::cout << count << '\n';
+        }
+        else if (arguments == "ODD")
+        {
+          auto count = std::count_if(
+            polygons.begin(), polygons.end(),
+            [](const Polygon& p)
+            {
+              return p.points.size() % 2 != 0;
             }
           );
           std::cout << count << '\n';
         }
         else
         {
-          try
-          {
-            int vertices = std::stoi(arguments);
-            if (!isValidVertexCount(vertices))
-            {
-              std::cout << ERROR_OF_WRONG_COMMAND << "\n";
-              return;
-            }
-
-            auto count = std::count_if(
-              polygons.begin(), polygons.end(),
-              [vertices](const Polygon& p)
-              {
-                return p.points.size() == static_cast<size_t>(vertices);
-              }
-            );
-            std::cout << count << '\n';
-          }
-          catch (const std::invalid_argument& except)
-          {
-            std::cout << ERROR_OF_WRONG_COMMAND << "\n";
-          }
+          std::cout << ERROR_OF_WRONG_COMMAND << '\n';
         }
         break;
 
@@ -225,7 +233,7 @@ namespace kirillova
           );
           std::cout << count << '\n';
         }
-        catch (const std::invalid_argument& except)
+        catch (const std::invalid_argument&)
         {
           std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
@@ -253,7 +261,7 @@ namespace kirillova
           );
           std::cout << result << "\n";
         }
-        catch (const std::invalid_argument& except)
+        catch (const std::invalid_argument&)
         {
           std::cout << ERROR_OF_WRONG_COMMAND << "\n";
         }
