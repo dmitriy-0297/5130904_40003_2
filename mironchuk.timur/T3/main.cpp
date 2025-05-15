@@ -79,6 +79,9 @@ bool parsePolygon(std::istream &in, Polygon &poly) {
         }
         tmp.points.push_back(pt);
     }
+    if (in >> std::ws && in.peek() != std::char_traits<char>::eof()) {
+        return false;
+    }
     poly = std::move(tmp);
     return true;
 }
@@ -112,50 +115,54 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (op == "AREA") {
-            std::string arg;
-            if (!(cmd >> arg)) {
-                std::cout << "<INVALID COMMAND>\n";
-                continue;
-            }
-            if (arg == "EVEN" || arg == "ODD") {
-                bool even = (arg == "EVEN");
-                double res = std::accumulate(figures.begin(),
-                                             figures.end(),
-                                             0.0,
-                                             [even](double acc, const Polygon &p) {
-                                                 return ((p.points.size() % 2 == 0) == even)
-                                                            ? acc + area(p)
-                                                            : acc;
-                                             });
-                std::cout << res << "\n";
-            } else if (arg == "MEAN") {
-                if (figures.empty()) {
+            {
+                std::string arg;
+                if (!(cmd >> arg)) {
                     std::cout << "<INVALID COMMAND>\n";
                     continue;
                 }
-                double res = std::accumulate(figures.begin(),
-                                             figures.end(),
-                                             0.0,
-                                             [](double acc, const Polygon &p) { return acc + area(p); }) /
-                             figures.size();
-                std::cout << res << "\n";
-            } else {
-                int v = 0;
-                try {
-                    v = std::stoi(arg);
-                } catch (...) {
-                    std::cout << "<INVALID COMMAND>\n";
-                    continue;
+                if (arg == "EVEN" || arg == "ODD") {
+                    bool even = (arg == "EVEN");
+                    double res = std::accumulate(figures.begin(),
+                                                 figures.end(),
+                                                 0.0,
+                                                 [even](double acc, const Polygon &p) {
+                                                     return ((p.points.size() % 2 == 0) == even)
+                                                                ? acc + area(p)
+                                                                : acc;
+                                                 });
+                    std::cout << res << "\n";
+                } else if (arg == "MEAN") {
+                    if (figures.empty()) {
+                        std::cout << "<INVALID COMMAND>\n";
+                        continue;
+                    }
+                    double res = std::accumulate(figures.begin(),
+                                                 figures.end(),
+                                                 0.0,
+                                                 [](double acc, const Polygon &p) { return acc + area(p); }) /
+                                 figures.size();
+                    std::cout << res << "\n";
+                } else {
+                    int v = 0;
+                    try {
+                        v = std::stoi(arg);
+                    } catch (...) {
+                        std::cout << "<INVALID COMMAND>\n";
+                        continue;
+                    }
+                    if (v < 3) {
+                        std::cout << "<INVALID COMMAND>\n";
+                        continue;
+                    }
+                    double res = std::accumulate(figures.begin(), figures.end(), 0.0,
+                                                 [v](double acc, const Polygon &p) {
+                                                     return (static_cast<int>(p.points.size()) == v)
+                                                                ? acc + area(p)
+                                                                : acc;
+                                                 });
+                    std::cout << res << "\n";
                 }
-                double res = std::accumulate(figures.begin(),
-                                             figures.end(),
-                                             0.0,
-                                             [v](double acc, const Polygon &p) {
-                                                 return (static_cast<int>(p.points.size()) == v)
-                                                            ? acc + area(p)
-                                                            : acc;
-                                             });
-                std::cout << res << "\n";
             }
         } else if (op == "MAX" || op == "MIN") {
             std::string arg;
@@ -197,8 +204,7 @@ int main(int argc, char *argv[]) {
             }
             if (arg == "EVEN" || arg == "ODD") {
                 bool even = (arg == "EVEN");
-                size_t c = std::count_if(figures.begin(),
-                                         figures.end(),
+                size_t c = std::count_if(figures.begin(), figures.end(),
                                          [even](const Polygon &p) { return (p.points.size() % 2 == 0) == even; });
                 std::cout << c << "\n";
             } else {
@@ -209,8 +215,11 @@ int main(int argc, char *argv[]) {
                     std::cout << "<INVALID COMMAND>\n";
                     continue;
                 }
-                size_t c = std::count_if(figures.begin(),
-                                         figures.end(),
+                if (v < 3) {
+                    std::cout << "<INVALID COMMAND>\n";
+                    continue;
+                }
+                size_t c = std::count_if(figures.begin(), figures.end(),
                                          [v](const Polygon &p) { return static_cast<int>(p.points.size()) == v; });
                 std::cout << c << "\n";
             }
@@ -258,3 +267,4 @@ int main(int argc, char *argv[]) {
         }
     }
 }
+
