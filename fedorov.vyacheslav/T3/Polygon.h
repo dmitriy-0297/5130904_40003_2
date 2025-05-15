@@ -23,5 +23,3 @@ struct Polygon
 
 std::istream& operator>>(std::istream&, Polygon&);
 std::ostream& operator<<(std::ostream&, const Polygon&);
-
-#endif
