@@ -24,7 +24,6 @@ int main(int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  using input_it = std::istream_iterator<kirillova::Polygon>;
   std::vector<kirillova::Polygon> polygons;
 
   std::string line;
