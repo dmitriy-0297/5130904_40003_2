@@ -53,7 +53,7 @@ std::vector<Polygon> readPolygonsFromFile(const std::string& filename)
     try
     {
       iss >> p;
-      if (iss)
+      if (iss && !iss.fail())
       {
         polygons.push_back(p);
       }
@@ -68,18 +68,38 @@ std::vector<Polygon> readPolygonsFromFile(const std::string& filename)
 
 void executeCommands(const std::vector<Polygon>& polygons)
 {
+  if (polygons.empty())
+  {
+    while (std::cin)
+    {
+      std::string cmd;
+      if (!std::getline(std::cin, cmd))
+      {
+        break;
+      }
+      if (cmd.empty())
+      {
+        continue;
+      }
+      std::cout << "<INVALID COMMAND>\n";
+    }
+    return;
+  }
   std::cout << std::fixed << std::setprecision(1);
-
   while (std::cin)
   {
     std::string cmd;
-    if (!std::getline(std::cin, cmd)) break;
-    if (cmd.empty()) continue;
-
+    if (!std::getline(std::cin, cmd))
+    {
+      break;
+    }
+    if (cmd.empty())
+    {
+      continue;
+    }
     std::istringstream iss(cmd);
     std::string cmd_name;
     iss >> cmd_name;
-
     try
     {
       if (cmd_name == "AREA")
@@ -139,7 +159,9 @@ void executeCommands(const std::vector<Polygon>& polygons)
         std::string type;
         iss >> type;
         if (polygons.empty())
+        {
           throw std::invalid_argument("No polygons");
+        }
         if (type == "AREA")
         {
           auto max_it = std::max_element(polygons.begin(), polygons.end(),
@@ -168,7 +190,9 @@ void executeCommands(const std::vector<Polygon>& polygons)
         std::string type;
         iss >> type;
         if (polygons.empty())
+        {
           throw std::invalid_argument("No polygons");
+        }
         if (type == "AREA")
         {
           auto min_it = std::min_element(polygons.begin(), polygons.end(),
@@ -246,10 +270,35 @@ void executeCommands(const std::vector<Polygon>& polygons)
         std::istringstream cmd_iss(cmd);
         std::string dummy;
         cmd_iss >> dummy;
-        if (!(cmd_iss >> target))
+        size_t num_vertices;
+        if (!(cmd_iss >> num_vertices))
         {
           throw std::invalid_argument("Invalid polygon format");
         }
+        if (num_vertices < 3)
+        {
+          throw std::invalid_argument("Invalid polygon format");
+        }
+        std::vector<Point> points;
+        points.reserve(num_vertices);
+        Point pt;
+        for (size_t i = 0; i < num_vertices; ++i)
+        {
+          if (!(cmd_iss >> pt))
+          {
+            throw std::invalid_argument("Invalid polygon format");
+          }
+          points.push_back(pt);
+        }
+        if (points.size() != num_vertices)
+        {
+          throw std::invalid_argument("Invalid polygon format");
+        }
+        if (cmd_iss >> std::ws && cmd_iss.peek() != EOF)
+        {
+          throw std::invalid_argument("Invalid polygon format");
+        }
+        target.points = points;
         size_t same_count = std::count(polygons.begin(), polygons.end(), target);
         std::cout << same_count << '\n';
       }

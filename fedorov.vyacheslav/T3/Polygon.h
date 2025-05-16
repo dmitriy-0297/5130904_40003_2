@@ -4,14 +4,14 @@
 #include <vector>
 #include <iosfwd>
 
-struct Point
-{
+struct Point {
   int x, y;
   bool operator==(const Point& other) const;
 };
 
-struct Polygon
-{
+std::istream& operator>>(std::istream&, Point&);
+
+struct Polygon {
   std::vector<Point> points;
   size_t vertexCount() const;
   double area() const;

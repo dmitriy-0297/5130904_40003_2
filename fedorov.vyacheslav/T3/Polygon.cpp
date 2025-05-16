@@ -21,14 +21,14 @@ size_t Polygon::vertexCount() const
 double Polygon::area() const
 {
   if (points.empty())
+  {
     return 0.0;
-
+  }
   struct Acc
   {
     double sum;
     Point prev;
   };
-
   Acc initial{ 0.0, points.front() };
   auto result = std::accumulate(
     points.begin() + 1, points.end(), initial,
@@ -40,27 +40,24 @@ double Polygon::area() const
       return newAcc;
     }
   );
-
   result.sum += (result.prev.x * points.front().y - points.front().x * result.prev.y);
-
   return std::abs(result.sum) / 2.0;
 }
 
 bool Polygon::isRectangle() const
 {
   if (vertexCount() != 4)
+  {
     return false;
-
+  }
   auto getVector = [](const Point& a, const Point& b)
     {
       return Point{ b.x - a.x, b.y - a.y };
     };
-
   auto dot = [](const Point& a, const Point& b)
     {
       return a.x * b.x + a.y * b.y;
     };
-
   std::array<int, 4> indices = { 0, 1, 2, 3 };
   auto check_angle = [&](int i)
     {
@@ -71,10 +68,10 @@ bool Polygon::isRectangle() const
       Point bc = getVector(b, c);
       return dot(ab, bc) == 0;
     };
-
   if (!std::all_of(indices.begin(), indices.end(), check_angle))
+  {
     return false;
-
+  }
   Point a = points[0], b = points[1], c = points[2], d = points[3];
   return (a.x - b.x) == (d.x - c.x) && (a.y - b.y) == (d.y - c.y) &&
     (b.x - c.x) == (a.x - d.x) && (b.y - c.y) == (a.y - d.y);
@@ -92,7 +89,31 @@ bool Polygon::hasVertexCount(size_t n) const
 
 bool Polygon::operator==(const Polygon& other) const
 {
-  return points == other.points;
+  if (points.size() != other.points.size())
+  {
+    return false;
+  }
+  auto normalize = [](const std::vector<Point>& pts)
+    {
+      if (pts.empty())
+      {
+        return pts;
+      }
+      auto min_x = std::min_element(pts.begin(), pts.end(),
+        [](const Point& a, const Point& b) { return a.x < b.x; })->x;
+      auto min_y = std::min_element(pts.begin(), pts.end(),
+        [](const Point& a, const Point& b) { return a.y < b.y; })->y;
+      std::vector<Point> norm_pts;
+      std::transform(pts.begin(), pts.end(), std::back_inserter(norm_pts),
+        [min_x, min_y](const Point& pt)
+        {
+          return Point{ pt.x - min_x, pt.y - min_y };
+        });
+      return norm_pts;
+    };
+  std::vector<Point> norm_self = normalize(points);
+  std::vector<Point> norm_other = normalize(other.points);
+  return norm_self == norm_other;
 }
 
 std::istream& operator>>(std::istream& is, Point& pt)
@@ -135,6 +156,11 @@ std::istream& operator>>(std::istream& is, Polygon& p)
   p.points.clear();
   if (is >> n)
   {
+    if (n < 3)
+    {
+      is.setstate(std::ios::failbit);
+      throw std::invalid_argument("Invalid polygon format");
+    }
     auto point_it = std::istream_iterator<Point>(is);
     std::vector<Point> temp;
     std::copy_n(point_it, n, std::back_inserter(temp));
@@ -142,11 +168,14 @@ std::istream& operator>>(std::istream& is, Polygon& p)
     {
       p.points.clear();
       is.setstate(std::ios::failbit);
+      throw std::invalid_argument("Invalid polygon format");
     }
-    else
+    is >> std::ws;
+    if (!is.eof())
     {
-      p.points = std::move(temp);
+      throw std::invalid_argument("Invalid polygon format");
     }
+    p.points = std::move(temp);
   }
   else
   {
@@ -158,9 +187,13 @@ std::istream& operator>>(std::istream& is, Polygon& p)
 std::ostream& operator<<(std::ostream& os, const Polygon& p)
 {
   os << p.points.size();
-  for (const auto& pt : p.points)
-  {
-    os << " (" << pt.x << ';' << pt.y << ')';
-  }
+  std::for_each(
+    p.points.begin(),
+    p.points.end(),
+    [&](const Point& pt)
+    {
+      os << " (" << pt.x << ';' << pt.y << ')';
+    }
+  );
   return os;
 }
