@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+std::string const FILENAME_ERROR = "filename required\n";
+std::string const OPENING_ERROR = "cannot open file\n";
+std::string const COMMAND_ERROR = "<INVALID COMMAND>\n";
+
 struct Point {
     int x;
     int y;
@@ -89,13 +93,13 @@ bool parsePolygon(std::istream &in, Polygon &poly) {
 int main(int argc, char *argv[]) {
     std::ios::sync_with_stdio(false);
     if (argc < 2) {
-        std::cerr << "filename required\n";
-        return 1;
+        std::cerr << FILENAME_ERROR;
+        exit(EXIT_FAILURE);
     }
     std::ifstream fin(argv[1]);
     if (!fin) {
-        std::cerr << "cannot open file\n";
-        return 1;
+        std::cerr << OPENING_ERROR;
+        exit(EXIT_FAILURE);
     }
     std::vector<Polygon> figures;
     std::string line;
@@ -111,14 +115,14 @@ int main(int argc, char *argv[]) {
         std::istringstream cmd(line);
         std::string op;
         if (!(cmd >> op)) {
-            std::cout << "<INVALID COMMAND>\n";
+            std::cout << COMMAND_ERROR;
             continue;
         }
         if (op == "AREA") {
             {
                 std::string arg;
                 if (!(cmd >> arg)) {
-                    std::cout << "<INVALID COMMAND>\n";
+                    std::cout << COMMAND_ERROR;
                     continue;
                 }
                 if (arg == "EVEN" || arg == "ODD") {
@@ -134,7 +138,7 @@ int main(int argc, char *argv[]) {
                     std::cout << res << "\n";
                 } else if (arg == "MEAN") {
                     if (figures.empty()) {
-                        std::cout << "<INVALID COMMAND>\n";
+                        std::cout << COMMAND_ERROR;
                         continue;
                     }
                     double res = std::accumulate(figures.begin(),
@@ -148,11 +152,11 @@ int main(int argc, char *argv[]) {
                     try {
                         v = std::stoi(arg);
                     } catch (...) {
-                        std::cout << "<INVALID COMMAND>\n";
+                        std::cout << COMMAND_ERROR;
                         continue;
                     }
                     if (v < 3) {
-                        std::cout << "<INVALID COMMAND>\n";
+                        std::cout << COMMAND_ERROR;
                         continue;
                     }
                     double res = std::accumulate(figures.begin(), figures.end(), 0.0,
@@ -167,7 +171,7 @@ int main(int argc, char *argv[]) {
         } else if (op == "MAX" || op == "MIN") {
             std::string arg;
             if (!(cmd >> arg) || figures.empty()) {
-                std::cout << "<INVALID COMMAND>\n";
+                std::cout << COMMAND_ERROR;
                 continue;
             }
             if (arg == "AREA") {
@@ -194,12 +198,12 @@ int main(int argc, char *argv[]) {
                                                  });
                 std::cout << it->points.size() << "\n";
             } else {
-                std::cout << "<INVALID COMMAND>\n";
+                std::cout << COMMAND_ERROR;
             }
         } else if (op == "COUNT") {
             std::string arg;
             if (!(cmd >> arg)) {
-                std::cout << "<INVALID COMMAND>\n";
+                std::cout << COMMAND_ERROR;
                 continue;
             }
             if (arg == "EVEN" || arg == "ODD") {
@@ -212,11 +216,11 @@ int main(int argc, char *argv[]) {
                 try {
                     v = std::stoi(arg);
                 } catch (...) {
-                    std::cout << "<INVALID COMMAND>\n";
+                    std::cout << COMMAND_ERROR;
                     continue;
                 }
                 if (v < 3) {
-                    std::cout << "<INVALID COMMAND>\n";
+                    std::cout << COMMAND_ERROR;
                     continue;
                 }
                 size_t c = std::count_if(figures.begin(), figures.end(),
@@ -226,7 +230,7 @@ int main(int argc, char *argv[]) {
         } else if (op == "ECHO") {
             Polygon target;
             if (!parsePolygon(cmd, target)) {
-                std::cout << "<INVALID COMMAND>\n";
+                std::cout << COMMAND_ERROR;
                 continue;
             }
             std::vector<Polygon> out;
@@ -246,7 +250,7 @@ int main(int argc, char *argv[]) {
         } else if (op == "MAXSEQ") {
             Polygon target;
             if (!parsePolygon(cmd, target)) {
-                std::cout << "<INVALID COMMAND>\n";
+                std::cout << COMMAND_ERROR;
                 continue;
             }
             size_t best = 0;
@@ -263,7 +267,7 @@ int main(int argc, char *argv[]) {
                           });
             std::cout << best << "\n";
         } else {
-            std::cout << "<INVALID COMMAND>\n";
+            std::cout << COMMAND_ERROR;
         }
     }
 }
