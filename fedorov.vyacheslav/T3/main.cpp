@@ -68,23 +68,6 @@ std::vector<Polygon> readPolygonsFromFile(const std::string& filename)
 
 void executeCommands(const std::vector<Polygon>& polygons)
 {
-  if (polygons.empty())
-  {
-    while (std::cin)
-    {
-      std::string cmd;
-      if (!std::getline(std::cin, cmd))
-      {
-        break;
-      }
-      if (cmd.empty())
-      {
-        continue;
-      }
-      std::cout << "<INVALID COMMAND>\n";
-    }
-    return;
-  }
   std::cout << std::fixed << std::setprecision(1);
   while (std::cin)
   {
@@ -97,17 +80,16 @@ void executeCommands(const std::vector<Polygon>& polygons)
     {
       continue;
     }
-    std::istringstream iss(cmd);
-    std::string cmd_name;
-    iss >> cmd_name;
     try
     {
+      std::istringstream iss(cmd);
+      std::string cmd_name;
+      iss >> cmd_name;
       if (cmd_name == "AREA")
       {
         std::string param;
         iss >> param;
         double sum = 0.0;
-        size_t count = 0;
         if (param == "EVEN")
         {
           sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
@@ -126,21 +108,26 @@ void executeCommands(const std::vector<Polygon>& polygons)
         }
         else if (param == "MEAN")
         {
+          if (polygons.empty())
+          {
+            throw std::invalid_argument("No polygons");
+          }
           sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
             [](double acc, const Polygon& p)
             {
               return acc + p.area();
             });
-          count = polygons.size();
-          if (count == 0)
-            throw std::invalid_argument("No polygons");
-          sum /= count;
+          sum /= polygons.size();
         }
         else
         {
           try
           {
             size_t num = std::stoi(param);
+            if (num < 3)
+            {
+              throw std::invalid_argument("Invalid parameter");
+            }
             sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
               [num](double acc, const Polygon& p)
               {
@@ -156,12 +143,12 @@ void executeCommands(const std::vector<Polygon>& polygons)
       }
       else if (cmd_name == "MAX")
       {
-        std::string type;
-        iss >> type;
         if (polygons.empty())
         {
           throw std::invalid_argument("No polygons");
         }
+        std::string type;
+        iss >> type;
         if (type == "AREA")
         {
           auto max_it = std::max_element(polygons.begin(), polygons.end(),
@@ -187,12 +174,12 @@ void executeCommands(const std::vector<Polygon>& polygons)
       }
       else if (cmd_name == "MIN")
       {
-        std::string type;
-        iss >> type;
         if (polygons.empty())
         {
           throw std::invalid_argument("No polygons");
         }
+        std::string type;
+        iss >> type;
         if (type == "AREA")
         {
           auto min_it = std::min_element(polygons.begin(), polygons.end(),
@@ -242,6 +229,10 @@ void executeCommands(const std::vector<Polygon>& polygons)
           try
           {
             size_t num = std::stoi(param);
+            if (num < 3)
+            {
+              throw std::invalid_argument("Invalid parameter");
+            }
             count = std::count_if(polygons.begin(), polygons.end(),
               [num](const Polygon& p)
               {
@@ -271,11 +262,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
         std::string dummy;
         cmd_iss >> dummy;
         size_t num_vertices;
-        if (!(cmd_iss >> num_vertices))
-        {
-          throw std::invalid_argument("Invalid polygon format");
-        }
-        if (num_vertices < 3)
+        if (!(cmd_iss >> num_vertices) || num_vertices < 3)
         {
           throw std::invalid_argument("Invalid polygon format");
         }
