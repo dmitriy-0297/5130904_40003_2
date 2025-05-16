@@ -86,7 +86,6 @@ namespace kirillova
               std::cout << ERROR_OF_WRONG_COMMAND << "\n";
               return;
             }
-
             double sum = std::accumulate(
               polygons.begin(), polygons.end(), 0.0,
               std::bind(std::plus<>(), _1,
@@ -195,8 +194,8 @@ namespace kirillova
           if (!isValidVertexCount(vertices))
           {
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
+            return;
           }
-
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
             [vertices](const Polygon& p)
@@ -223,7 +222,6 @@ namespace kirillova
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
             return;
           }
-
           double targetArea = getPolygonsArea(target);
           auto count = std::count_if(
             polygons.begin(), polygons.end(),
@@ -251,7 +249,6 @@ namespace kirillova
             std::cout << ERROR_OF_WRONG_COMMAND << "\n";
             return;
           }
-
           auto predicate = std::bind(same_comparator, std::cref(target), std::placeholders::_1);
           size_t result = std::count_if(
             polygons.cbegin(), polygons.cend(),
