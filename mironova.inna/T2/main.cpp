@@ -118,6 +118,11 @@ public:
         cout << key1_ << " " << key2_ << " " << key3_ << endl;
     }
 
+    bool isValid()
+    {
+        return valid_;
+    }
+
     friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
         ds = DataStruct();
@@ -172,6 +177,7 @@ int main()
     try
     {
         std::vector<DataStruct> structs;
+        std::vector<DataStruct> valid_structs;
         std::istream_iterator<DataStruct> begin(std::cin);
         std::istream_iterator<DataStruct> end;
 
@@ -179,7 +185,12 @@ int main()
 
         std::sort(structs.begin(), structs.end());
 
-        std::copy(structs.begin(), structs.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+        std::copy_if(structs.begin(), structs.end(),
+            std::back_inserter(valid_structs),
+            [](const DataStruct& ds) { return ds.isValid(); });
+
+        std::copy(valid_structs.begin(), valid_structs.end(),
+            std::ostream_iterator<DataStruct>(std::cout, "\n"));
     }
     catch (const std::exception& e)
     {
