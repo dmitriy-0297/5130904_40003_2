@@ -8,7 +8,6 @@
 #include <iterator>
 #include <sstream>
 
-const char* COMPARING_ERROR = "There are equal structures";
 using namespace std;
 
 struct DataStruct
@@ -29,7 +28,7 @@ private:
         if (key3_ > other.key3_) return true;
         if (key3_ < other.key3_) return false;
 
-        throw std::runtime_error(COMPARING_ERROR);
+        return false;
     }
 
     bool isNumber(string str)
