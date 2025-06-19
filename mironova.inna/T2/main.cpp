@@ -150,12 +150,12 @@ public:
             ds.key1_ = std::stoull(key1);
             ds.key2_ = std::stoull(key2, nullptr, 8);
             ds.key3_ = key3;
+            return is;
         }
         catch (...)
         {
-            
+            return is;
         }
-        return is;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const DataStruct& ds)
