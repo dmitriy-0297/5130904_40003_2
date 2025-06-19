@@ -45,16 +45,17 @@ private:
 
     string readData(std::istream& is)
     {
-        char ch;
+        char ch = '\0';
         string data;
 
-        while (is >> ch && ch != '(') { }
-
-        if (ch != '(')
+        while (is >> ch)
         {
-            data = "\0";
-            return data;
+            if (ch == '(') break;
         }
+
+        if (is.eof()) return "";
+
+        if (ch != '(') return "";
 
         getline(is, data, ')');
 
@@ -127,41 +128,34 @@ public:
         return result;
     }
 
-    friend std::istream& operator>>(std::istream& is, DataStruct& ds)
+        friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
         string data = ds.readData(is);
-        if (!ds.checkData(data))
+        try
+        {
+            if (data.empty()) throw std::invalid_argument("incorrect");
+
+            size_t key1st = data.find("key1 ") + 5;
+            size_t key2st = data.find("key2 ") + 5;
+            size_t key3st = data.find("key3 \"") + 6;
+            size_t ull = data.find("ull");
+            size_t stend = data.rfind("\":");
+            size_t oxend = data.find(":", key2st);
+
+            string key1 = data.substr(key1st, ull - key1st);
+            string key2 = data.substr(key2st, oxend - key2st);
+            string key3 = data.substr(key3st, stend - key3st);
+
+            if (key1.empty() || key2.empty() || key3.empty()) throw std::invalid_argument("incorrect");
+
+            ds.key1_ = std::stoull(key1);
+            ds.key2_ = std::stoull(key2, nullptr, 8);
+            ds.key3_ = key3;
+        }
+        catch (...)
         {
             is.setstate(std::ios_base::failbit);
-            return is;
         }
-
-        int key1st = data.find("key1 ") + 5;
-        int key2st = data.find("key2 0") + 6;
-        int key3st = data.find("key3 \"") + 6;
-        int ull = data.find("ull");
-        int stend = data.rfind("\":");
-        int oxend = data.find(":", key2st);
-
-        string key1 = "";
-        string key2 = "";
-        string key3 = "";
-
-        for (int i = key1st; i < ull; i++) key1.push_back(data[i]);
-        for (int i = key2st; i < oxend; i++) key2.push_back(data[i]);
-        for (int i = key3st; i < stend; i++) key3.push_back(data[i]);
-
-        if (key3.size() == 0 || !ds.isNumber(key1) || !ds.isNumber(key2))
-        {
-            is.setstate(std::ios_base::failbit);
-            return is;
-        }
-
-        ds.key1_ = std::stoull(key1, nullptr, 10);
-        ds.key2_ = std::stoull(key2, nullptr, 8);
-        ds.key3_ = key3;
-
-
         return is;
     }
 
