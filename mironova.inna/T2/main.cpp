@@ -118,7 +118,7 @@ public:
         cout << key1_ << " " << key2_ << " " << key3_ << endl;
     }
 
-    bool isValid()
+    bool isValid() const
     {
         return valid_;
     }
