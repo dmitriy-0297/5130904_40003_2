@@ -129,6 +129,7 @@ public:
 
     friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
+        ds = DataStruct();
         string data = ds.readData(is);
         try
         {
