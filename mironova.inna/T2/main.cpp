@@ -140,8 +140,10 @@ public:
             size_t ull = data.find("ull");
             size_t stend = data.rfind("\":");
             size_t oxend = data.find(":", key2st);
-
-            if (key1st == string::npos || key2st == string::npos || key3st == string::npos || ull == string::npos || stend == string::npos || oxend == string::npos) return is;
+            
+            if (key1st == string::npos || key2st == string::npos) return is;
+            if (key3st == string::npos || ull == string::npos) return is;
+            if (stend == string::npos || oxend == string::npos) return is;
 
             string key1 = data.substr(key1st, ull - key1st);
             string key2 = data.substr(key2st, oxend - key2st);
