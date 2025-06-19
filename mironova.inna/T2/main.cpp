@@ -36,7 +36,7 @@ private:
     {
         if (str.size() == 0) return false;
 
-        for (int i = 0; i < str.size(); i++)
+        for (size_t i = 0; i < str.size(); i++)
         {
             if (!isdigit(str[i])) return false;
         }
