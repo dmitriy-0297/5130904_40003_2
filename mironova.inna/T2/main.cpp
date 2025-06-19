@@ -117,6 +117,16 @@ public:
         cout << key1_ << " " << key2_ << " " << key3_ << endl;
     }
 
+    unsigned long long toULL(const string& s)
+    {
+        unsigned long long result = 0;
+        for (char c : s)
+        {
+            result = result * 10 + (c - '0');
+        }
+        return result;
+    }
+
     friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
         string data = ds.readData(is);
@@ -141,20 +151,23 @@ public:
         for (int i = key2st; i < oxend; i++) key2.push_back(data[i]);
         for (int i = key3st; i < stend; i++) key3.push_back(data[i]);
 
-        if (key3.size() == 0) return is;
+        if (key3.size() == 0 || !ds.isNumber(key1) || !ds.isNumber(key2))
+        {
+            is.setstate(std::ios_base::failbit);
+            return is;
+        }
 
-        if (!ds.isNumber(key1) || !ds.isNumber(key2)) return is;
-
-        ds.key1_ = std::stoull(key1);
+        ds.key1_ = std::stoull(key1, nullptr, 10);
         ds.key2_ = std::stoull(key2, nullptr, 8);
         ds.key3_ = key3;
+
 
         return is;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const DataStruct& ds)
     {
-        os << "(:key1 " << ds.key1_ << "ull:key2 0";
+        os << "(:key1 " << std::dec << ds.key1_ << "ull:key2 0";
         os << std::oct << ds.key2_;
         os << ":key3 \"" << ds.key3_ << "\":)";
         return os;
@@ -171,6 +184,7 @@ int main()
         std::istream_iterator<DataStruct> end;
 
         std::copy(begin, end, std::back_inserter(structs));
+
 
         std::sort(structs.begin(), structs.end());
 
