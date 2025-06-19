@@ -141,6 +141,8 @@ public:
             size_t stend = data.rfind("\":");
             size_t oxend = data.find(":", key2st);
 
+            if (key1st == string::npos || key2st == string::npos || key3st == string::npos || ull == string::npos || stend == string::npos || oxend == string::npos) return is;
+
             string key1 = data.substr(key1st, ull - key1st);
             string key2 = data.substr(key2st, oxend - key2st);
             string key3 = data.substr(key3st, stend - key3st);
