@@ -127,7 +127,7 @@ public:
         return result;
     }
 
-        friend std::istream& operator>>(std::istream& is, DataStruct& ds)
+    friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
         string data = ds.readData(is);
         try
@@ -140,7 +140,7 @@ public:
             size_t ull = data.find("ull");
             size_t stend = data.rfind("\":");
             size_t oxend = data.find(":", key2st);
-            
+
             if (key1st == string::npos || key2st == string::npos) return is;
             if (key3st == string::npos || ull == string::npos) return is;
             if (stend == string::npos || oxend == string::npos) return is;
@@ -151,7 +151,7 @@ public:
 
             if (key1.empty() || key2.empty() || key3.empty()) throw std::invalid_argument("incorrect");
 
-            ds.key1_ = std::stoull(key1);
+            ds.key1_ = std::stoull(key1, nullptr, 10);
             ds.key2_ = std::stoull(key2, nullptr, 8);
             ds.key3_ = key3;
             return is;
@@ -181,7 +181,6 @@ int main()
         std::istream_iterator<DataStruct> end;
 
         std::copy(begin, end, std::back_inserter(structs));
-
 
         std::sort(structs.begin(), structs.end());
 
