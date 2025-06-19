@@ -153,7 +153,7 @@ public:
         }
         catch (...)
         {
-            is.setstate(std::ios_base::failbit);
+            
         }
         return is;
     }
