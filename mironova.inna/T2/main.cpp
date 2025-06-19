@@ -16,6 +16,7 @@ private:
     unsigned long long key1_;
     unsigned long long key2_;
     string key3_;
+    bool valid_;
 
     bool compare(const DataStruct& other) const
     {
@@ -117,16 +118,6 @@ public:
         cout << key1_ << " " << key2_ << " " << key3_ << endl;
     }
 
-    unsigned long long toULL(const string& s)
-    {
-        unsigned long long result = 0;
-        for (char c : s)
-        {
-            result = result * 10 + (c - '0');
-        }
-        return result;
-    }
-
     friend std::istream& operator>>(std::istream& is, DataStruct& ds)
     {
         ds = DataStruct();
@@ -142,9 +133,9 @@ public:
             size_t stend = data.rfind("\":");
             size_t oxend = data.find(":", key2st);
 
-            if (key1st == string::npos || key2st == string::npos) return is;
-            if (key3st == string::npos || ull == string::npos) return is;
-            if (stend == string::npos || oxend == string::npos) return is;
+            if (key1st == string::npos || key2st == string::npos) throw std::invalid_argument("incorrect");
+            if (key3st == string::npos || ull == string::npos) throw std::invalid_argument("incorrect");
+            if (stend == string::npos || oxend == string::npos) throw std::invalid_argument("incorrect");
 
             string key1 = data.substr(key1st, ull - key1st);
             string key2 = data.substr(key2st, oxend - key2st);
@@ -155,20 +146,30 @@ public:
             ds.key1_ = std::stoull(key1, nullptr, 10);
             ds.key2_ = std::stoull(key2, nullptr, 8);
             ds.key3_ = key3;
+            ds.valid_ = true;
             return is;
         }
         catch (...)
         {
+            ds.valid_ = false;
             return is;
         }
     }
 
     friend std::ostream& operator<<(std::ostream& os, const DataStruct& ds)
     {
-        os << "(:key1 " << std::dec << ds.key1_ << "ull:key2 0";
-        os << std::oct << ds.key2_;
-        os << ":key3 \"" << ds.key3_ << "\":)";
-        return os;
+        try
+        {
+            if (!ds.valid_) throw std::invalid_arguement("incorrect");
+            os << "(:key1 " << std::dec << ds.key1_ << "ull:key2 0";
+            os << std::oct << ds.key2_;
+            os << ":key3 \"" << ds.key3_ << "\":)";
+            return os;
+        }
+        catch (...)
+        {
+            return os;
+        }
     }
 
 };
