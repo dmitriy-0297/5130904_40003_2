@@ -158,18 +158,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const DataStruct& ds)
     {
-        try
-        {
-            if (!ds.valid_) throw std::invalid_argument("incorrect");
-            os << "(:key1 " << std::dec << ds.key1_ << "ull:key2 0";
-            os << std::oct << ds.key2_;
-            os << ":key3 \"" << ds.key3_ << "\":)";
-            return os;
-        }
-        catch (...)
-        {
-            return os;
-        }
+        if (!ds.valid_) return os;
+        os << "(:key1 " << std::dec << ds.key1_ << "ull:key2 0";
+        os << std::oct << ds.key2_;
+        os << ":key3 \"" << ds.key3_ << "\":)";
+        return os;
     }
 
 };
