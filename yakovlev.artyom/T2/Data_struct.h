@@ -43,6 +43,6 @@ namespace yakovlevart {
     std::istream& operator>>(std::istream& in, DoubleIO&& val) noexcept;
     std::istream& operator>>(std::istream& in, RationalIO&& val) noexcept;
 
-}
+}  
 
 #endif

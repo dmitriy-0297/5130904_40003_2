@@ -19,4 +19,4 @@ int main() {
 	std::copy(data.begin(), data.end(), out);
 
 	return 0;
-}
+}   
