@@ -1,5 +1,4 @@
 #include "Data_struct.h"
-
 #include <iomanip>
 #include <cmath>
 #include <sstream>
@@ -77,19 +76,15 @@ namespace yakovlevart {
                 break;
             }
         }
-
         DataStruct tmp{};
         bool ok1 = false;
         bool ok2 = false;
         bool ok3 = false;
-
         in >> DelimiterIO{ ':' };
-
         for (int i = 0; i < 3 && in; ++i) {
             in >> LabelIO{ "key" };
             size_t num = 0;
             in >> num;
-
             switch (num) {
             case 1:
                 in >> DoubleIO{ tmp.key1 };
@@ -107,9 +102,7 @@ namespace yakovlevart {
                 in.setstate(std::ios::failbit);
             }
         }
-
         in >> DelimiterIO{ ')' };
-
         if (ok1 && ok2 && ok3) {
             value = tmp;
         }
@@ -139,4 +132,4 @@ namespace yakovlevart {
         return lhs.key3.length() < rhs.key3.length();
     }
 
-}  
+}
