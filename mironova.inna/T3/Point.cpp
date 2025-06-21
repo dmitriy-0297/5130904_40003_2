@@ -109,7 +109,7 @@ double Point::getAngle(const Point& a, const Point& b) const
     if (lenA == 0 || lenB == 0) return 0.0;
 
     double cosTheta = dot / (lenA * lenB);
-    cosTheta = std::clamp(cosTheta, -1.0, 1.0);
+    cosTheta = std::max(-1.0, std::min(1.0, cosTheta));
 
     double angle = std::acos(cosTheta);
 
