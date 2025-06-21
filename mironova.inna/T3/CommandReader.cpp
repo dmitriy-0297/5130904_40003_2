@@ -45,7 +45,7 @@ bool CommandReader::isPolygon(const string& datastring)
 {
     try
     {
-        Polygon(datastring);
+        Polygon p(datastring);
         return true;
     }
     catch (const InvalidPolygon&)
@@ -181,7 +181,7 @@ void CommandReader::readFile()
     bool endReached = std::accumulate(
         counter.begin(), counter.end(),
         false,
-        [this](bool eof, int)
+        [this](bool, int)
         {
             string line;
             if (getline(file_, line))
