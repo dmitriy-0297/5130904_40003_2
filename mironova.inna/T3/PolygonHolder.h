@@ -26,6 +26,7 @@ struct PolygonHolder
     //вспомогательные
     Polygon getFrame();
     void add(const Polygon& p);
+    bool isEmpty();
 
     //основные
     double getAREA(bool even);
