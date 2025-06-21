@@ -11,17 +11,20 @@ namespace yakovlev
     {
         char c{};
         in >> c;
-        if (!in || c != d.ch) in.setstate(std::ios::failbit);
+        if (!in || c != d.ch) {
+            in.setstate(std::ios::failbit);
+        }
         return in;
     }
 
     std::istream& operator>>(std::istream& in, Lbl l) noexcept
     {
-        for (const char* p = l.literal; *p && in; ++p)
-        {
+        for (const char* p = l.literal; *p && in; ++p) {
             char c{};
             in >> c;
-            if (c != *p) in.setstate(std::ios::failbit);
+            if (c != *p) {
+                in.setstate(std::ios::failbit);
+            }
         }
         return in;
     }
@@ -35,35 +38,21 @@ namespace yakovlev
 
     std::istream& operator>>(std::istream& in, Dbl d) noexcept
     {
-        in >> std::ws;
-        std::string num;
-        char ch{};
-        while (in.get(ch))
-        {
-            if (ch == ':') break;
-            num += ch;
-        }
-        if (!in) return in;
-
-        if (num.empty() || (num.back() != 'd' && num.back() != 'D'))
-        {
+        std::string tok;
+        std::getline(in, tok, ':');
+        if (tok.size() < 2 || (tok.back() != 'd' && tok.back() != 'D')) {
             in.setstate(std::ios::failbit);
             return in;
         }
-
-        num.pop_back(); 
-
-        try
-        {
-            d.v = std::stod(num);
+        tok.pop_back();
+        try {
+            d.v = std::stod(tok);
         }
-        catch (...)
-        {
+        catch (...) {
             in.setstate(std::ios::failbit);
         }
         return in;
     }
-    // ------------------------------------
 
     std::istream& operator>>(std::istream& in, Rat r) noexcept
     {
@@ -76,31 +65,47 @@ namespace yakovlev
     {
         char c{};
         while (in.get(c) && c != '(') {}
-        if (!in) return in;
+        if (!in) {
+            return in;
+        }
 
         DataStruct tmp{};
-        bool ok1 = false, ok2 = false, ok3 = false;
+        bool ok1 = false;
+        bool ok2 = false;
+        bool ok3 = false;
 
         in >> Del{ ':' };
 
-        for (int i = 0; i < 3 && in; ++i)
-        {
+        for (int i = 0; i < 3 && in; ++i) {
             in >> Lbl{ "key" };
             std::size_t id{};
             in >> id;
 
-            switch (id)
-            {
-            case 1: in >> Dbl{ tmp.key1 }; ok1 = in.good(); break;
-            case 2: in >> Rat{ tmp.key2 }; ok2 = in.good(); break;
-            case 3: in >> Str{ tmp.key3 }; ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);
+            switch (id) {
+            case 1:
+                in >> Dbl{ tmp.key1 };
+                ok1 = in.good();
+                break;
+            case 2:
+                in >> Rat{ tmp.key2 };
+                ok2 = in.good();
+                break;
+            case 3:
+                in >> Str{ tmp.key3 };
+                ok3 = in.good();
+                break;
+            default:
+                in.setstate(std::ios::failbit);
             }
         }
         in >> Del{ ')' };
 
-        if (ok1 && ok2 && ok3) dst = tmp;
-        else                   in.setstate(std::ios::failbit);
+        if (ok1 && ok2 && ok3) {
+            dst = tmp;
+        }
+        else {
+            in.setstate(std::ios::failbit);
+        }
         return in;
     }
 
@@ -116,12 +121,14 @@ namespace yakovlev
 
     bool operator<(const DataStruct& l, const DataStruct& r) noexcept
     {
-        if (l.key1 != r.key1) return l.key1 < r.key1;
-
+        if (l.key1 != r.key1) {
+            return l.key1 < r.key1;
+        }
         long double ql = static_cast<long double>(l.key2.first) / l.key2.second;
         long double qr = static_cast<long double>(r.key2.first) / r.key2.second;
-        if (ql != qr) return ql < qr;
-
+        if (ql != qr) {
+            return ql < qr;
+        }
         return l.key3.size() < r.key3.size();
     }
 
