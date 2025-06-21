@@ -14,6 +14,7 @@
 #include "CommandReader.h"
 
 const char* NO_FILE_ERROR = "<NO FILE>";
+const char* INVALID_FILE = "<INVALID FILE>";
 const char* INVALID_POLYGON_ERROR = "<INVALID POLYGON>";
 
 
@@ -28,6 +29,7 @@ int main(int, char* argv[])
         CommandReader cr(inputFile, cin, cout);
         cr.readFile();
         cr.runEverything();
+        return 0;
     }
     catch (const InvalidPolygon&)
     {
@@ -35,8 +37,12 @@ int main(int, char* argv[])
     }
     catch (const std::exception& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
+        return 1;
     }
-
-    return 0;
+    catch (...)
+    {
+        std::cerr << INVALID_FILE << std::endl;
+        return 1;
+    }
 }
