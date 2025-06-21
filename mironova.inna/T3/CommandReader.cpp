@@ -74,7 +74,7 @@ void CommandReader::AREA(string parameter)
         area = ph_.getAREA(true);
     else if (parameter == "ODD")
         area = ph_.getAREA(false);
-    else if (parameter == "MEAN")
+    else if (parameter == "MEAN" && !ph_.isEmpty())
         area = ph_.getAREA();
     else area = -1;
 
@@ -251,7 +251,40 @@ bool CommandReader::readCommand()
         RECTS();
     else if (command == "RIGHTSHAPES")
         RIGHTSHAPES();
-    else out_ << INVALID_COMMAND_ERROR << endl;
+    else
+    {
+        out_ << INVALID_COMMAND_ERROR << endl;
+        if (!(in_ >> command)) return false;
+        if ((command == "AREA") && (in_ >> parameter))
+            AREA(parameter);
+        else if ((command == "MAX") && (in_ >> parameter))
+            MAX(parameter);
+        else if ((command == "MIN") && (in_ >> parameter))
+            MIN(parameter);
+        else if ((command == "COUNT") && (in_ >> parameter))
+            COUNT(parameter);
+        else if ((command == "PERMS") && (getline(in_, parameter)))
+            PERMS(parameter);
+        else if ((command == "MAXSEQ") && (getline(in_, parameter)))
+            MAXSEQ(parameter);
+        else if ((command == "RMECHO") && (getline(in_, parameter)))
+            RMECHO(parameter);
+        else if ((command == "ECHO") && (getline(in_, parameter)))
+            ECHO(parameter);
+        else if ((command == "LESSAREA") && (getline(in_, parameter)))
+            LESSAREA(parameter);
+        else if ((command == "INFRAME") && (getline(in_, parameter)))
+            INFRAME(parameter);
+        else if ((command == "INTERSECTIONS") && (getline(in_, parameter)))
+            INTERSECTIONS(parameter);
+        else if ((command == "SAME") && (getline(in_, parameter)))
+            SAME(parameter);
+        else if (command == "RECTS")
+            RECTS();
+        else if (command == "RIGHTSHAPES")
+            RIGHTSHAPES();
+        else return false;
+    }
 
     return true;
 }
