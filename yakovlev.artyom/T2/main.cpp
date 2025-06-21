@@ -14,7 +14,7 @@ int main()
 
     while (true) {
         char c;
-        while (std::cin.get(c) {
+        while (std::cin.get(c)) {
             if (c == '(') {
                 std::cin.putback(c);
                 break;
