@@ -93,7 +93,7 @@ namespace yakovlevart
         bool ok1 = false, ok2 = false, ok3 = false;
 
         in >> DelimiterIO{ ':' };
-        for (int i = 0; i < 3 && in; ++i)
+        while (in && in.peek() != ')')
         {
             in >> LabelIO{ "key" };
             size_t num{};
@@ -104,15 +104,20 @@ namespace yakovlevart
             case 1: in >> DoubleIO{ tmp.key1 };         ok1 = in.good(); break;
             case 2: in >> RationalIO{ tmp.key2 };       ok2 = in.good(); break;
             case 3: in >> StringIO{ tmp.key3 };         ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);  break;
+            default: in.setstate(std::ios::failbit);    break;
             }
         }
+
         in >> DelimiterIO{ ')' };
 
         if (ok1 && ok2 && ok3)
+        {
             value = tmp;
+        }
         else
+        {
             in.setstate(std::ios::failbit);
+        }
 
         return in;
     }
