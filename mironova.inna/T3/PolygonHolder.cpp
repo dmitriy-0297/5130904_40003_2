@@ -41,7 +41,7 @@ void PolygonHolder::add(const Polygon& p)
     polygons_.push_back(p);
 }
 
-bool isEmpty()
+bool PolygonHolder::isEmpty()
 {
     return (polygons_.size() == 0);
 }
