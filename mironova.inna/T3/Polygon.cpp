@@ -204,7 +204,7 @@ bool Polygon::isIntersecting(const Polygon& other)
 
 bool Polygon::isSame(const Polygon& other)
 {
-    if (points_.size() != other.getVertexes()) return false;
+    if (points_.size() != static_cast<size_t>(other.getVertexes())) return false;
     vector<Point> p1 = sortPoints();
     vector<Point> p2 = other.sortPoints();
     Point firstDelta = p1[0].getDelta(p2[0]);
