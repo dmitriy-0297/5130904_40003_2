@@ -95,7 +95,7 @@ void CommandReader::MAX(string parameter)
         if (parameter == "AREA")
             out_ << ph_.getMAX(true) << endl;
         else if (parameter == "VERTEXES")
-            out_ << (int) ph_.getMAX(false) << endl;
+            out_ << static_cast<int>(ph_.getMAX(false)) << endl;
         else out_ << INVALID_COMMAND_ERROR << endl;
     }
 }
@@ -109,7 +109,7 @@ void CommandReader::MIN(string parameter)
         if (parameter == "AREA")
             out_ << ph_.getMIN(true) << endl;
         else if (parameter == "VERTEXES")
-            out_ << (int) ph_.getMIN(false) << endl;
+            out_ << static_cast<int>(ph_.getMIN(false)) << endl;
         else out_ << INVALID_COMMAND_ERROR << endl;
     }
 }
