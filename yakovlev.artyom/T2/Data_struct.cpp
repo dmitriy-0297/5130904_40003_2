@@ -1,4 +1,5 @@
-#include "Data_struct.h"
+﻿#include "Data_struct.h"
+
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -34,16 +35,35 @@ namespace yakovlev
 
     std::istream& operator>>(std::istream& in, Dbl d) noexcept
     {
-        std::string tok;
-        in >> tok;
-        if (tok.size() < 2 || (tok.back() != 'd' && tok.back() != 'D'))
-            return in.setstate(std::ios::failbit), in;
+        in >> std::ws;
+        std::string num;
+        char ch{};
+        while (in.get(ch))
+        {
+            if (ch == ':') break;
+            num += ch;
+        }
+        if (!in) return in;
 
-        tok.pop_back();
-        try { d.v = std::stod(tok); }
-        catch (...) { in.setstate(std::ios::failbit); }
-        return in >> Del{ ':' };
+        if (num.empty() || (num.back() != 'd' && num.back() != 'D'))
+        {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
+
+        num.pop_back(); 
+
+        try
+        {
+            d.v = std::stod(num);
+        }
+        catch (...)
+        {
+            in.setstate(std::ios::failbit);
+        }
+        return in;
     }
+    // ------------------------------------
 
     std::istream& operator>>(std::istream& in, Rat r) noexcept
     {
@@ -51,7 +71,6 @@ namespace yakovlev
             >> Del{ ':' } >> Lbl{ "D" } >> r.v.second
             >> Del{ ':' } >> Del{ ')' } >> Del{ ':' };
     }
-
 
     std::istream& operator>>(std::istream& in, DataStruct& dst) noexcept
     {
@@ -72,10 +91,10 @@ namespace yakovlev
 
             switch (id)
             {
-            case 1: in >> Dbl{ tmp.key1 };                              ok1 = in.good(); break;
-            case 2: in >> Rat{ tmp.key2 };                              ok2 = in.good(); break;
-            case 3: in >> Str{ tmp.key3 };                              ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);                                break;
+            case 1: in >> Dbl{ tmp.key1 }; ok1 = in.good(); break;
+            case 2: in >> Rat{ tmp.key2 }; ok2 = in.good(); break;
+            case 3: in >> Str{ tmp.key3 }; ok3 = in.good(); break;
+            default: in.setstate(std::ios::failbit);
             }
         }
         in >> Del{ ')' };
@@ -101,8 +120,9 @@ namespace yakovlev
 
         long double ql = static_cast<long double>(l.key2.first) / l.key2.second;
         long double qr = static_cast<long double>(r.key2.first) / r.key2.second;
-        if (ql != qr)   return ql < qr;
+        if (ql != qr) return ql < qr;
 
         return l.key3.size() < r.key3.size();
     }
+
 }
