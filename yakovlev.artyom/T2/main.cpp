@@ -12,25 +12,24 @@ int main()
     using yakovlevart::DataStruct;
     std::vector<DataStruct> data;
 
-    char c;
-    while (std::cin.get(c)) {
-        if (c == '(') {
-            std::cin.putback(c);
-
-            DataStruct tmp;
-            if (std::cin >> tmp) {
-                data.push_back(tmp);
-            }
-            else {
-                std::cin.clear();
-                while (std::cin.get(c) && c != ')') {}
-            }
-        }
-        else if (c != ' ' && c != '\n' && c != '\t') {
-            while (std::cin.get(c) && c != '(') {}
+    while (true) {
+        char c;
+        while (std::cin.get(c) {
             if (c == '(') {
                 std::cin.putback(c);
+                break;
             }
+        }
+
+        if (std::cin.eof()) break;
+
+        DataStruct tmp;
+        if (std::cin >> tmp) {
+            data.push_back(tmp);
+        }
+        else if (!std::cin.eof()) {
+            std::cin.clear();
+            while (std::cin.get(c) && c != ')') {}
         }
     }
 

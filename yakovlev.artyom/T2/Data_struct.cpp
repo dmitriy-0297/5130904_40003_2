@@ -8,7 +8,7 @@ namespace yakovlevart
 {
     constexpr double EPSILON = 1e-6;
 
-    std::istream& operator>>(std::istream& in, DelimiterIO&& v) noexcept
+    std::istream& operator>>(std::istream& in, DelimiterIO&& v)
     {
         char c = 0;
         in >> c;
@@ -18,7 +18,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, LabelIO&& v) noexcept
+    std::istream& operator>>(std::istream& in, LabelIO&& v)
     {
         std::string label;
         in >> label;
@@ -28,7 +28,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, StringIO&& v) noexcept
+    std::istream& operator>>(std::istream& in, StringIO&& v)
     {
         char c = 0;
         in >> c;
@@ -43,7 +43,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, DoubleIO&& v) noexcept
+    std::istream& operator>>(std::istream& in, DoubleIO&& v)
     {
         std::string str;
         in >> str;
@@ -67,7 +67,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, RationalIO&& v) noexcept
+    std::istream& operator>>(std::istream& in, RationalIO&& v)
     {
         in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' } >> LabelIO{ "N" } >> v.val.first
             >> DelimiterIO{ ':' } >> LabelIO{ "D" } >> v.val.second
@@ -75,7 +75,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, DataStruct& value) noexcept
+    std::istream& operator>>(std::istream& in, DataStruct& value)
     {
         char c = 0;
         in >> c;
@@ -151,7 +151,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::ostream& operator<<(std::ostream& out, const DataStruct& v) noexcept
+    std::ostream& operator<<(std::ostream& out, const DataStruct& v)
     {
         out << "(:key1 " << std::fixed << std::setprecision(1)
             << v.key1 << 'd';
@@ -161,7 +161,7 @@ namespace yakovlevart
         return out;
     }
 
-    bool operator<(const DataStruct& a, const DataStruct& b) noexcept
+    bool operator<(const DataStruct& a, const DataStruct& b)
     {
         if (std::abs(a.key1 - b.key1) > EPSILON) {
             return a.key1 < b.key1;
