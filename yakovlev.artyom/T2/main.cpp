@@ -4,7 +4,7 @@
 #include <limits>
 #include <vector>
 
-#include "Data_Struct.h"
+#include "Data_struct.h"
 
 int main()
 {
@@ -15,11 +15,14 @@ int main()
         yakovlev::DataStruct tmp;
         if (std::cin >> tmp)
         {
-            data.push_back(tmp); 
+            data.push_back(tmp);
         }
         else
         {
-            if (std::cin.eof()) break; 
+            if (std::cin.eof())
+            {
+                break;
+            }
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
@@ -27,7 +30,10 @@ int main()
 
     std::sort(data.begin(), data.end());
 
-    std::copy(data.begin(), data.end(),
+    std::copy(
+        data.begin(),
+        data.end(),
         std::ostream_iterator<yakovlev::DataStruct>(std::cout, "\n"));
+
     return 0;
 }
