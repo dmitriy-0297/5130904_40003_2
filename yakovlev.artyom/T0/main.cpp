@@ -1,6 +1,6 @@
 #include <iostream>
 
 int main() {
-    std::cout << "yakovlev.artem" << std::endl;
+    std::cout << "yakovlev.artyom" << std::endl;
     return 0;
 }
