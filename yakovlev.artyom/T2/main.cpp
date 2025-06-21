@@ -3,6 +3,7 @@
 #include <iterator>
 #include <limits>
 #include <vector>
+#include <cctype>
 
 #include "Data_struct.h"
 
@@ -11,14 +12,25 @@ int main()
     using yakovlevart::DataStruct;
     std::vector<DataStruct> data;
 
-    while (std::cin.good()) {
-        DataStruct tmp;
-        if (std::cin >> tmp) {
-            data.push_back(tmp);
+    char c;
+    while (std::cin.get(c)) {
+        if (c == '(') {
+            std::cin.putback(c);
+
+            DataStruct tmp;
+            if (std::cin >> tmp) {
+                data.push_back(tmp);
+            }
+            else {
+                std::cin.clear();
+                while (std::cin.get(c) && c != ')') {}
+            }
         }
-        else if (!std::cin.eof()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        else if (c != ' ' && c != '\n' && c != '\t') {
+            while (std::cin.get(c) && c != '(') {}
+            if (c == '(') {
+                std::cin.putback(c);
+            }
         }
     }
 

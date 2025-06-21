@@ -3,13 +3,12 @@
 #include <sstream>
 #include <cctype>
 #include <cmath>
-#include <iostream>
 
 namespace yakovlevart
 {
     constexpr double EPSILON = 1e-6;
 
-    std::istream& operator>>(std::istream& in, DelimiterIO&& v)
+    std::istream& operator>>(std::istream& in, DelimiterIO&& v) noexcept
     {
         char c = 0;
         in >> c;
@@ -19,7 +18,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, LabelIO&& v)
+    std::istream& operator>>(std::istream& in, LabelIO&& v) noexcept
     {
         std::string label;
         in >> label;
@@ -29,7 +28,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, StringIO&& v)
+    std::istream& operator>>(std::istream& in, StringIO&& v) noexcept
     {
         char c = 0;
         in >> c;
@@ -44,7 +43,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, DoubleIO&& v)
+    std::istream& operator>>(std::istream& in, DoubleIO&& v) noexcept
     {
         std::string str;
         in >> str;
@@ -52,7 +51,7 @@ namespace yakovlevart
             in.setstate(std::ios::failbit);
             return in;
         }
-        if (str.back() == 'd' || str.back() == 'D') {
+        if (!str.empty() && (str.back() == 'd' || str.back() == 'D' || str.back() == 'e' || str.back() == 'E')) {
             str.pop_back();
         }
         try {
@@ -68,7 +67,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, RationalIO&& v)
+    std::istream& operator>>(std::istream& in, RationalIO&& v) noexcept
     {
         in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' } >> LabelIO{ "N" } >> v.val.first
             >> DelimiterIO{ ':' } >> LabelIO{ "D" } >> v.val.second
@@ -76,7 +75,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, DataStruct& value)
+    std::istream& operator>>(std::istream& in, DataStruct& value) noexcept
     {
         char c = 0;
         in >> c;
@@ -91,12 +90,18 @@ namespace yakovlevart
         bool hasKey3 = false;
 
         while (true) {
+            while (in.peek() == ' ') in.get();
+
             if (in.peek() == ')') {
                 in.get();
                 break;
             }
 
-            in >> DelimiterIO{ ':' } >> LabelIO{ "key" };
+            if (!(in >> DelimiterIO{ ':' } >> LabelIO{ "key" })) {
+                in.setstate(std::ios::failbit);
+                break;
+            }
+
             size_t num = 0;
             in >> num;
 
@@ -133,9 +138,7 @@ namespace yakovlevart
             }
 
             if (in.fail()) {
-                in.clear();
-                while (in.get(c) && c != ':' && c != ')') {}
-                if (c == ')') break;
+                break;
             }
         }
 
@@ -148,7 +151,7 @@ namespace yakovlevart
         return in;
     }
 
-    std::ostream& operator<<(std::ostream& out, const DataStruct& v)
+    std::ostream& operator<<(std::ostream& out, const DataStruct& v) noexcept
     {
         out << "(:key1 " << std::fixed << std::setprecision(1)
             << v.key1 << 'd';
@@ -158,7 +161,7 @@ namespace yakovlevart
         return out;
     }
 
-    bool operator<(const DataStruct& a, const DataStruct& b)
+    bool operator<(const DataStruct& a, const DataStruct& b) noexcept
     {
         if (std::abs(a.key1 - b.key1) > EPSILON) {
             return a.key1 < b.key1;
