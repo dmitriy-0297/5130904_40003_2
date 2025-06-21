@@ -101,7 +101,11 @@ void CommandReader::MIN(string parameter)
 void CommandReader::COUNT(string parameter)
 {
     if (isNumber(parameter))
-        out_ << ph_.getCOUNT(std::stoi(parameter)) << endl;
+    {
+        int p = std::stoi(parameter);
+        if (p < 3) throw std::runtime_error(INVALID_COMMAND_ERROR);
+        else out_ << ph_.getCOUNT(std::stoi(parameter)) << endl;
+    }
     else if (parameter == "EVEN")
         out_ << ph_.getCOUNT(true) << endl;
     else if (parameter == "ODD")
@@ -210,7 +214,6 @@ bool CommandReader::readCommand()
     else if ((command == "MIN") && (in_ >> parameter))
         MIN(parameter);
     else if ((command == "COUNT") && (in_ >> parameter))
-        if (parameter < 3) throw std::runtime_error(INVALID_COMMAND_ERROR);
         COUNT(parameter);
     else if ((command == "PERMS") && (getline(in_, parameter)))
         PERMS(parameter);
