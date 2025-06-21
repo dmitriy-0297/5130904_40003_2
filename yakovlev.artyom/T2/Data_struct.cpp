@@ -2,7 +2,7 @@
 
 #include <iomanip>
 #include <sstream>
-#include <cmath>
+#include <unordered_map>
 
 namespace yakovlevart
 {
@@ -47,7 +47,7 @@ namespace yakovlevart
                 break;
             val.val += ch;
         }
-        return in >> DelimiterIO{ ':' };
+        return in;
     }
 
     std::istream& operator>>(std::istream& in, DoubleIO&& val) noexcept
@@ -69,14 +69,14 @@ namespace yakovlevart
         {
             in.setstate(std::ios::failbit);
         }
-        return in >> DelimiterIO{ ':' };
+        return in;
     }
 
     std::istream& operator>>(std::istream& in, RationalIO&& val) noexcept
     {
         in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' } >> LabelIO{ "N" } >> val.val.first
             >> DelimiterIO{ ':' } >> LabelIO{ "D" } >> val.val.second
-            >> DelimiterIO{ ':' } >> DelimiterIO{ ')' } >> DelimiterIO{ ':' };
+            >> DelimiterIO{ ':' } >> DelimiterIO{ ')' };
         return in;
     }
 
@@ -90,34 +90,51 @@ namespace yakovlevart
         }
 
         DataStruct tmp{};
-        bool ok1 = false, ok2 = false, ok3 = false;
+        bool hasKey1 = false, hasKey2 = false, hasKey3 = false;
 
-        in >> DelimiterIO{ ':' };
-        while (in && in.peek() != ')')
+        while (in >> DelimiterIO{ ':' })
         {
-            in >> LabelIO{ "key" };
-            size_t num{};
-            in >> num;
-
-            switch (num)
+            std::string label;
+            char c;
+            while (in.get(c) && std::isalpha(c))
             {
-            case 1: in >> DoubleIO{ tmp.key1 };         ok1 = in.good(); break;
-            case 2: in >> RationalIO{ tmp.key2 };       ok2 = in.good(); break;
-            case 3: in >> StringIO{ tmp.key3 };         ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);    break;
+                label += c;
             }
+            if (!in)
+                break;
+            in.putback(c);
+
+            if (label == "key1")
+            {
+                in >> DoubleIO{ tmp.key1 };
+                hasKey1 = in.good();
+            }
+            else if (label == "key2")
+            {
+                in >> RationalIO{ tmp.key2 };
+                hasKey2 = in.good();
+            }
+            else if (label == "key3")
+            {
+                in >> StringIO{ tmp.key3 };
+                hasKey3 = in.good();
+            }
+            else
+            {
+                in.setstate(std::ios::failbit);
+                break;
+            }
+
+            in >> DelimiterIO{ ':' };
+            in >> ch;
+            if (ch == ')') break;
+            in.putback(ch);
         }
 
-        in >> DelimiterIO{ ')' };
-
-        if (ok1 && ok2 && ok3)
-        {
+        if (hasKey1 && hasKey2 && hasKey3)
             value = tmp;
-        }
         else
-        {
             in.setstate(std::ios::failbit);
-        }
 
         return in;
     }
