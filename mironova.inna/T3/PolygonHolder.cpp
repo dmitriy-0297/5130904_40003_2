@@ -41,6 +41,11 @@ void PolygonHolder::add(const Polygon& p)
     polygons_.push_back(p);
 }
 
+bool isEmpty()
+{
+    return (polygons_.size() == 0);
+}
+
 //основные
 
 //площади
@@ -85,6 +90,8 @@ double PolygonHolder::getAREA(int vertexes)
 //максимумы и минимумы
 double PolygonHolder::getMAX(bool area)
 {
+    if (points_.size() == 0) return -1;
+
     if (area)
     {
         Polygon pmax = *std::max_element(
