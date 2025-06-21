@@ -64,7 +64,7 @@ namespace yakovlevart
         in >> DelimiterIO{ ')' };
 
         if (ok1 && ok2 && ok3) value = tmp;
-        else in.setstate(std::ios::fail bit);
+        else in.setstate(std::ios::failbit);
         return in;
     }
 
