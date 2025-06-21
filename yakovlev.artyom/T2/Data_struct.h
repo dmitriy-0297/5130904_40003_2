@@ -1,41 +1,39 @@
 #ifndef DATA_STRUCT_H
 #define DATA_STRUCT_H
 
-#include <iosfwd>
 #include <string>
+#include <iostream>
 #include <utility>
 
-namespace yakovlevart
-{
-    struct DataStruct
-    {
-        double key1{};
-        std::pair<long long, unsigned long long>  key2{};
-        std::string                               key3{};
+namespace yakovlevart {
+
+    struct DataStruct {
+        double key1;
+        std::pair<long long, unsigned long long> key2;
+        std::string key3;
     };
 
     std::istream& operator>>(std::istream& in, DataStruct& value) noexcept;
     std::ostream& operator<<(std::ostream& out, const DataStruct& value) noexcept;
     bool operator<(const DataStruct& lhs, const DataStruct& rhs) noexcept;
 
-    struct DoubleIO
-    {
+    struct DoubleIO {
         double& val;
     };
-    struct RationalIO
-    {
+
+    struct RationalIO {
         std::pair<long long, unsigned long long>& val;
     };
-    struct StringIO
-    {
+
+    struct StringIO {
         std::string& val;
     };
-    struct DelimiterIO
-    {
+
+    struct DelimiterIO {
         char val;
     };
-    struct LabelIO
-    {
+
+    struct LabelIO {
         std::string val;
     };
 
@@ -44,6 +42,7 @@ namespace yakovlevart
     std::istream& operator>>(std::istream& in, StringIO&& val) noexcept;
     std::istream& operator>>(std::istream& in, DoubleIO&& val) noexcept;
     std::istream& operator>>(std::istream& in, RationalIO&& val) noexcept;
+
 }
 
 #endif

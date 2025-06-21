@@ -1,22 +1,22 @@
-#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <algorithm>
 
 #include "Data_struct.h"
 
-int main()
-{
+int main() {
     std::vector<yakovlevart::DataStruct> data;
 
-    std::copy(std::istream_iterator<yakovlevart::DataStruct>{std::cin},
-        std::istream_iterator<yakovlevart::DataStruct>{},
-        std::back_inserter(data));
+    std::istream_iterator<yakovlevart::DataStruct> first(std::cin);
+    std::istream_iterator<yakovlevart::DataStruct> last;
+
+    std::copy(first, last, std::back_inserter(data));
 
     std::sort(data.begin(), data.end());
 
-    std::copy(data.begin(), data.end(),
-        std::ostream_iterator<yakovlevart::DataStruct>{std::cout, "\n"});
+    std::ostream_iterator<yakovlevart::DataStruct> out(std::cout, "\n");
+    std::copy(data.begin(), data.end(), out);
 
     return 0;
 }
