@@ -46,6 +46,8 @@ void PolygonHolder::add(const Polygon& p)
 //площади
 double PolygonHolder::getAREA(bool even)
 {
+    if (polygons_.size() == 0) return 0;
+
     return std::accumulate(
         polygons_.begin(),
         polygons_.end(),
@@ -56,6 +58,8 @@ double PolygonHolder::getAREA(bool even)
 
 double PolygonHolder::getAREA()
 {
+    if (polygons_.size() == 0) return 0;
+
     double area =  std::accumulate(
         polygons_.begin(),
         polygons_.end(),
@@ -67,6 +71,8 @@ double PolygonHolder::getAREA()
 
 double PolygonHolder::getAREA(int vertexes)
 {
+    if (polygons_.size() == 0) return 0;
+
     return std::accumulate(
         polygons_.begin(),
         polygons_.end(),
