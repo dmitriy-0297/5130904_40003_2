@@ -41,6 +41,9 @@ Polygon::Polygon (string data)
             points.push_back(Point(token));
         }
         points_ = points;
+
+        if (iss >> token) throw InvalidPolygon();
+        if (points_.size() < 3) throw InvalidPolygon();
     }
     catch (const InvalidPoint&)
     {
