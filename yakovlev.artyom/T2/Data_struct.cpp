@@ -38,22 +38,36 @@ namespace yakovlevart
 
     std::istream& operator>>(std::istream& in, DataStruct& value) noexcept
     {
-        char c{}; while (in >> c) { if (c == '(') break; } if (!in) return in;
-        DataStruct tmp{}; bool ok1{}, ok2{}, ok3{}; in >> DelimiterIO{ ':' };
-        while (in && in.peek() != ')')
+        char c{};
+        while (in >> c) { if (c == '(') break; }
+        if (!in) return in;
+
+        DataStruct tmp{};
+        bool ok1{}, ok2{}, ok3{};
+        in >> DelimiterIO{ ':' };
+
+        while (in)
         {
-            in >> LabelIO{ "key" }; size_t num{}; in >> num;
+            while (std::isspace(in.peek())) in.get();
+            if (in.peek() == ')') break;
+
+            in >> LabelIO{ "key" };
+            size_t num{}; in >> num;
             switch (num)
             {
             case 1: in >> DoubleIO{ tmp.key1 };   ok1 = in.good(); break;
             case 2: in >> RationalIO{ tmp.key2 }; ok2 = in.good(); break;
             case 3: in >> StringIO{ tmp.key3 };   ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);             break;
+            default: in.setstate(std::ios::failbit);  break;
             }
         }
-        in >> DelimiterIO{ ')' }; if (ok1 && ok2 && ok3) value = tmp; else in.setstate(std::ios::failbit);
+        in >> DelimiterIO{ ')' };
+
+        if (ok1 && ok2 && ok3) value = tmp;
+        else in.setstate(std::ios::fail bit);
         return in;
     }
+
 
     std::ostream& operator<<(std::ostream& out, const DataStruct& v) noexcept
     {
