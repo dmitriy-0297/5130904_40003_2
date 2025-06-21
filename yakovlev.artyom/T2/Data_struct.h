@@ -1,34 +1,31 @@
-#ifndef DATA_STRUCT_H
-#define DATA_STRUCT_H
+#ifndef DATASTRUCT_H
+#define DATASTRUCT_H
 
 #include <iosfwd>
 #include <string>
 #include <utility>
 
-namespace yakovlevart
+namespace yakovlev
 {
     struct DataStruct
     {
-        double                                       key1{};
-        std::pair<long long, unsigned long long>     key2{};
-        std::string                                  key3{};
+        double                                     key1{};
+        std::pair<long long, unsigned long long>   key2{};
+        std::string                                key3{};
     };
 
-    std::istream& operator>>(std::istream& in, DataStruct& value) noexcept;
-    std::ostream& operator<<(std::ostream& out, const DataStruct& value) noexcept;
-    bool operator<(const DataStruct& lhs, const DataStruct& rhs) noexcept;
+    struct Del { char  ch; };
+    struct Lbl { const char* literal; };
+    struct Dbl { double& v; };
+    struct Rat {
+        std::pair<long long,
+            unsigned long long>& v;
+    };
+    struct Str { std::string& v; };
 
-    struct DoubleIO { double& val; };
-    struct RationalIO { std::pair<long long, unsigned long long>& val; };
-    struct StringIO { std::string& val; };
-    struct DelimIO { char val; };
-    struct LabelIO { std::string val; };
+    std::istream& operator>>(std::istream&, DataStruct&) noexcept;
+    std::ostream& operator<<(std::ostream&, const DataStruct&) noexcept;
+    bool            operator<(const DataStruct&, const DataStruct&) noexcept;
 
-    std::istream& operator>>(std::istream& in, DelimIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, LabelIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, StringIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, DoubleIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, RationalIO&& val) noexcept;
 }
-
 #endif
