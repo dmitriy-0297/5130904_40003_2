@@ -25,10 +25,10 @@ namespace yakovlevart
     struct LabelIO { std::string val; };
 
     std::istream& operator>>(std::istream& in, DelimiterIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, LabelIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, StringIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, DoubleIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, RationalIO&& val) noexcept;
+    std::istream& operator>>(std::istream& in, LabelIO&& val)      noexcept;
+    std::istream& operator>>(std::istream& in, StringIO&& val)     noexcept;
+    std::istream& operator>>(std::istream& in, DoubleIO&& val)     noexcept;
+    std::istream& operator>>(std::istream& in, RationalIO&& val)   noexcept;
 }
 
 #endif
