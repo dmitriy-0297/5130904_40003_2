@@ -66,6 +66,7 @@ void CommandReader::checkAndAdd(const string& datastring)
 //комманды
 void CommandReader::AREA(string parameter)
 {
+    out_ << std::showpoint;
     if (isNumber(parameter))
         out_ << ph_.getAREA(std::stoi(parameter)) << endl;
     else if (parameter == "EVEN")
@@ -79,6 +80,7 @@ void CommandReader::AREA(string parameter)
 
 void CommandReader::MAX(string parameter)
 {
+    out_ << std::showpoint;
     if (parameter == "AREA")
         out_ << ph_.getMAX(true) << endl;
     else if (parameter == "VERTEXES")
@@ -88,6 +90,7 @@ void CommandReader::MAX(string parameter)
 
 void CommandReader::MIN(string parameter)
 {
+    out_ << std::showpoint;
     if (parameter == "AREA")
         out_ << ph_.getMIN(true) << endl;
     else if (parameter == "VERTEXES")
@@ -207,6 +210,7 @@ bool CommandReader::readCommand()
     else if ((command == "MIN") && (in_ >> parameter))
         MIN(parameter);
     else if ((command == "COUNT") && (in_ >> parameter))
+        if (parameter < 3) throw std::runtime_error(INVALID_COMMAND_ERROR);
         COUNT(parameter);
     else if ((command == "PERMS") && (getline(in_, parameter)))
         PERMS(parameter);
