@@ -24,6 +24,7 @@ int main(int, char* argv[])
 {
     try
     {
+        if (argv[1] == nullptr) throw std::runtime_error(NO_FILE_ERROR);
         std::ifstream inputFile(argv[1]);
         if (!inputFile) throw std::runtime_error(NO_FILE_ERROR);
         CommandReader cr(inputFile, cin, cout);
