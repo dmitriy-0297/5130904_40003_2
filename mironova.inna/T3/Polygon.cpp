@@ -81,7 +81,7 @@ Polygon Polygon::operator+(const Polygon& other)
 
 bool Polygon::operator==(const Polygon& other) const
 {
-    if (getVertexes() != other.getVertexes()) return false;
+    if (points_.size() != static_cast<size_t>(other.getVertexes())) return false;
     return std::equal(
         points_.begin(), points_.end(),
         other.points_.begin(),
