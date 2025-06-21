@@ -90,7 +90,7 @@ double PolygonHolder::getAREA(int vertexes)
 //максимумы и минимумы
 double PolygonHolder::getMAX(bool area)
 {
-    if (points_.size() == 0) return -1;
+    if (polygons_.size() == 0) return -1;
 
     if (area)
     {
