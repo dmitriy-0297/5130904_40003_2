@@ -4,6 +4,7 @@
 #include <iosfwd>
 #include <string>
 #include <utility>
+#include <complex>
 
 namespace yakovlevart
 {
@@ -14,9 +15,9 @@ namespace yakovlevart
         std::string key3{};
     };
 
-    std::istream& operator>>(std::istream& in, DataStruct& value) noexcept;
-    std::ostream& operator<<(std::ostream& out, const DataStruct& value) noexcept;
-    bool operator<(const DataStruct& lhs, const DataStruct& rhs) noexcept;
+    std::istream& operator>>(std::istream& in, DataStruct& value);
+    std::ostream& operator<<(std::ostream& out, const DataStruct& value);
+    bool operator<(const DataStruct& lhs, const DataStruct& rhs);
 
     struct DoubleIO { double& val; };
     struct RationalIO { std::pair<long long, unsigned long long>& val; };
@@ -24,11 +25,11 @@ namespace yakovlevart
     struct DelimiterIO { char val; };
     struct LabelIO { std::string val; };
 
-    std::istream& operator>>(std::istream& in, DelimiterIO&& val) noexcept;
-    std::istream& operator>>(std::istream& in, LabelIO&& val)      noexcept;
-    std::istream& operator>>(std::istream& in, StringIO&& val)     noexcept;
-    std::istream& operator>>(std::istream& in, DoubleIO&& val)     noexcept;
-    std::istream& operator>>(std::istream& in, RationalIO&& val)   noexcept;
+    std::istream& operator>>(std::istream& in, DelimiterIO&& val);
+    std::istream& operator>>(std::istream& in, LabelIO&& val);
+    std::istream& operator>>(std::istream& in, StringIO&& val);
+    std::istream& operator>>(std::istream& in, DoubleIO&& val);
+    std::istream& operator>>(std::istream& in, RationalIO&& val);
 }
 
 #endif

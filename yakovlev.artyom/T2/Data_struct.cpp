@@ -1,89 +1,175 @@
 #include "Data_struct.h"
 #include <iomanip>
 #include <sstream>
+#include <cctype>
+#include <cmath>
+#include <iostream>
 
 namespace yakovlevart
 {
-    std::istream& operator>>(std::istream& in, DelimiterIO&& v) noexcept
+    constexpr double EPSILON = 1e-6;
+
+    std::istream& operator>>(std::istream& in, DelimiterIO&& v)
     {
-        char c{}; in >> c; if (!in || c != v.val) in.setstate(std::ios::failbit);
+        char c = 0;
+        in >> c;
+        if (in && c != v.val) {
+            in.setstate(std::ios::failbit);
+        }
         return in;
     }
-    std::istream& operator>>(std::istream& in, LabelIO&& v) noexcept
+
+    std::istream& operator>>(std::istream& in, LabelIO&& v)
     {
-        for (char e : v.val) { char a{}; in >> a; if (!in || a != e) { in.setstate(std::ios::failbit); break; } }
+        std::string label;
+        in >> label;
+        if (in && label != v.val) {
+            in.setstate(std::ios::failbit);
+        }
         return in;
     }
-    std::istream& operator>>(std::istream& in, StringIO&& v) noexcept
+
+    std::istream& operator>>(std::istream& in, StringIO&& v)
     {
-        char c{}; in >> c; if (c != '"') { in.setstate(std::ios::failbit); return in; }
-        v.val.clear(); while (in.get(c)) { if (c == '"') break; v.val += c; }
-        return in >> DelimiterIO{ ':' };
+        char c = 0;
+        in >> c;
+        if (c != '"') {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
+        v.val.clear();
+        while (in.get(c) && c != '"') {
+            v.val += c;
+        }
+        return in;
     }
-    std::istream& operator>>(std::istream& in, DoubleIO&& v) noexcept
+
+    std::istream& operator>>(std::istream& in, DoubleIO&& v)
     {
-        std::string s; in >> s;
-        if (s.empty() || (s.back() != 'd' && s.back() != 'D')) { in.setstate(std::ios::failbit); return in; }
-        s.pop_back(); try { v.val = std::stod(s); }
-        catch (...) { in.setstate(std::ios::failbit); }
-        return in >> DelimiterIO{ ':' };
+        std::string str;
+        in >> str;
+        if (str.empty()) {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
+        if (str.back() == 'd' || str.back() == 'D') {
+            str.pop_back();
+        }
+        try {
+            size_t pos = 0;
+            v.val = std::stod(str, &pos);
+            if (pos != str.size()) {
+                in.setstate(std::ios::failbit);
+            }
+        }
+        catch (...) {
+            in.setstate(std::ios::failbit);
+        }
+        return in;
     }
-    std::istream& operator>>(std::istream& in, RationalIO&& v) noexcept
+
+    std::istream& operator>>(std::istream& in, RationalIO&& v)
     {
         in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' } >> LabelIO{ "N" } >> v.val.first
             >> DelimiterIO{ ':' } >> LabelIO{ "D" } >> v.val.second
-            >> DelimiterIO{ ':' } >> DelimiterIO{ ')' } >> DelimiterIO{ ':' };
+            >> DelimiterIO{ ':' } >> DelimiterIO{ ')' };
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, DataStruct& value) noexcept
+    std::istream& operator>>(std::istream& in, DataStruct& value)
     {
-        char c{};
-        while (in >> c) { if (c == '(') break; }
-        if (!in) return in;
+        char c = 0;
+        in >> c;
+        if (c != '(') {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
 
-        DataStruct tmp{};
-        bool ok1{}, ok2{}, ok3{};
-        in >> DelimiterIO{ ':' };
+        DataStruct tmp;
+        bool hasKey1 = false;
+        bool hasKey2 = false;
+        bool hasKey3 = false;
 
-        while (in)
-        {
-            while (std::isspace(in.peek())) in.get();
-            if (in.peek() == ')') break;
+        while (true) {
+            if (in.peek() == ')') {
+                in.get();
+                break;
+            }
 
-            in >> LabelIO{ "key" };
-            size_t num{}; in >> num;
-            switch (num)
-            {
-            case 1: in >> DoubleIO{ tmp.key1 };   ok1 = in.good(); break;
-            case 2: in >> RationalIO{ tmp.key2 }; ok2 = in.good(); break;
-            case 3: in >> StringIO{ tmp.key3 };   ok3 = in.good(); break;
-            default: in.setstate(std::ios::failbit);  break;
+            in >> DelimiterIO{ ':' } >> LabelIO{ "key" };
+            size_t num = 0;
+            in >> num;
+
+            switch (num) {
+            case 1:
+                if (hasKey1) {
+                    in.setstate(std::ios::failbit);
+                }
+                else {
+                    in >> DoubleIO{ tmp.key1 };
+                    hasKey1 = !in.fail();
+                }
+                break;
+            case 2:
+                if (hasKey2) {
+                    in.setstate(std::ios::failbit);
+                }
+                else {
+                    in >> RationalIO{ tmp.key2 };
+                    hasKey2 = !in.fail();
+                }
+                break;
+            case 3:
+                if (hasKey3) {
+                    in.setstate(std::ios::failbit);
+                }
+                else {
+                    in >> StringIO{ tmp.key3 };
+                    hasKey3 = !in.fail();
+                }
+                break;
+            default:
+                in.setstate(std::ios::failbit);
+            }
+
+            if (in.fail()) {
+                in.clear();
+                while (in.get(c) && c != ':' && c != ')') {}
+                if (c == ')') break;
             }
         }
-        in >> DelimiterIO{ ')' };
 
-        if (ok1 && ok2 && ok3) value = tmp;
-        else in.setstate(std::ios::failbit);
+        if (hasKey1 && hasKey2 && hasKey3) {
+            value = tmp;
+        }
+        else {
+            in.setstate(std::ios::failbit);
+        }
         return in;
     }
 
-
-    std::ostream& operator<<(std::ostream& out, const DataStruct& v) noexcept
+    std::ostream& operator<<(std::ostream& out, const DataStruct& v)
     {
-        out << std::nouppercase << std::fixed << std::setprecision(1)
-            << "(:key1 " << v.key1 << 'd'
-            << ":key2 (:N " << v.key2.first << ":D " << v.key2.second << ":)"
-            << ":key3 \"" << v.key3 << "\":)";
+        out << "(:key1 " << std::fixed << std::setprecision(1)
+            << v.key1 << 'd';
+        out << ":key2 (:N " << v.key2.first << ":D "
+            << v.key2.second << ":)";
+        out << ":key3 \"" << v.key3 << "\":)";
         return out;
     }
 
-    bool operator<(const DataStruct& a, const DataStruct& b) noexcept
+    bool operator<(const DataStruct& a, const DataStruct& b)
     {
-        if (a.key1 != b.key1) return a.key1 < b.key1;
-        long double l = static_cast<long double>(a.key2.first) / a.key2.second;
-        long double r = static_cast<long double>(b.key2.first) / b.key2.second;
-        if (l != r) return l < r;
+        if (std::abs(a.key1 - b.key1) > EPSILON) {
+            return a.key1 < b.key1;
+        }
+
+        const long double lhs = static_cast<long double>(a.key2.first) / a.key2.second;
+        const long double rhs = static_cast<long double>(b.key2.first) / b.key2.second;
+        if (std::abs(lhs - rhs) > EPSILON) {
+            return lhs < rhs;
+        }
+
         return a.key3.length() < b.key3.length();
     }
 }
