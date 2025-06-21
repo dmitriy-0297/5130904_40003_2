@@ -67,7 +67,7 @@ void CommandReader::checkAndAdd(const string& datastring)
 //комманды
 void CommandReader::AREA(string parameter)
 {
-    double area = 0.0;
+    double area = -1;
     if (isNumber(parameter) && std::stoi(parameter) >= 3)
         area = ph_.getAREA(std::stoi(parameter));
     else if (parameter == "EVEN")
@@ -76,9 +76,9 @@ void CommandReader::AREA(string parameter)
         area = ph_.getAREA(false);
     else if (parameter == "MEAN")
         area = ph_.getAREA();
-    else area = 0.0;
+    else area = -1;
 
-    if (area == 0.0) std::cerr << INVALID_COMMAND_ERROR << endl;
+    if (area == -1) out_ << INVALID_COMMAND_ERROR << endl;
     else
     {
         out_ << std::fixed << std::setprecision(1);
@@ -88,22 +88,30 @@ void CommandReader::AREA(string parameter)
 
 void CommandReader::MAX(string parameter)
 {
-    out_ << std::fixed << std::setprecision(1);
-    if (parameter == "AREA")
-        out_ << ph_.getMAX(true) << endl;
-    else if (parameter == "VERTEXES")
-        out_ << std::round(ph_.getMAX(false)) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    if (ph_.isEmpty()) out_ << INVALID_COMMAND_ERROR << endl;
+    else
+    {
+        out_ << std::fixed << std::setprecision(1);
+        if (parameter == "AREA")
+            out_ << ph_.getMAX(true) << endl;
+        else if (parameter == "VERTEXES")
+            out_ << (int) ph_.getMAX(false) << endl;
+        else out_ << INVALID_COMMAND_ERROR << endl;
+    }
 }
 
 void CommandReader::MIN(string parameter)
 {
-    out_ << std::fixed << std::setprecision(1);
-    if (parameter == "AREA")
-        out_ << ph_.getMIN(true) << endl;
-    else if (parameter == "VERTEXES")
-        out_ << std::round(ph_.getMIN(false)) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    if (ph_.isEmpty()) out_ << INVALID_COMMAND_ERROR << endl;
+    else
+    {
+        out_ << std::fixed << std::setprecision(1);
+        if (parameter == "AREA")
+            out_ << ph_.getMIN(true) << endl;
+        else if (parameter == "VERTEXES")
+            out_ << (int) ph_.getMIN(false) << endl;
+        else out_ << INVALID_COMMAND_ERROR << endl;
+    }
 }
 
 void CommandReader::COUNT(string parameter)
@@ -111,70 +119,70 @@ void CommandReader::COUNT(string parameter)
     if (isNumber(parameter))
     {
         int p = std::stoi(parameter);
-        if (p < 3) std::cerr << INVALID_COMMAND_ERROR << endl;
+        if (p < 3) out_ << INVALID_COMMAND_ERROR << endl;
         else out_ << ph_.getCOUNT(std::stoi(parameter)) << endl;
     }
     else if (parameter == "EVEN")
         out_ << ph_.getCOUNT(true) << endl;
     else if (parameter == "ODD")
         out_ << ph_.getCOUNT(false) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::PERMS(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getPERMS(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::MAXSEQ(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getMAXSEQ(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::RMECHO(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getRMECHO(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::ECHO(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getECHO(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::LESSAREA(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getLESSAREA(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::INFRAME(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getINFRAME(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::INTERSECTIONS(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getINTERSECTIONS(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::SAME(string datastring)
 {
     if (isPolygon(datastring))
         out_ << ph_.getSAME(datastring) << endl;
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 }
 
 void CommandReader::RECTS()
@@ -243,7 +251,7 @@ bool CommandReader::readCommand()
         RECTS();
     else if (command == "RIGHTSHAPES")
         RIGHTSHAPES();
-    else std::cerr << INVALID_COMMAND_ERROR << endl;
+    else out_ << INVALID_COMMAND_ERROR << endl;
 
     return true;
 }
