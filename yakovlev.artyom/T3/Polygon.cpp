@@ -1,5 +1,4 @@
 ﻿#include "Polygon.h"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -17,8 +16,7 @@ bool Point::operator==(const Point& other) const
 std::istream& operator>>(std::istream& in, Point& pt)
 {
     char open{}, sep{}, close{};
-    if (in >> open >> pt.x >> sep >> pt.y >> close &&
-        open == '(' && sep == ';' && close == ')')
+    if (in >> open >> pt.x >> sep >> pt.y >> close && open == '(' && sep == ';' && close == ')')
     {
         return in;
     }
@@ -37,15 +35,11 @@ double Polygon::area() const
     {
         return 0.0;
     }
-    auto acc = std::inner_product(points.begin(),
-        points.end() - 1,
-        points.begin() + 1,
-        0.0,
+    double acc = std::inner_product(points.begin(), points.end() - 1, points.begin() + 1, 0.0,
         std::plus<>(),
         [](const Point& a, const Point& b)
         { return a.x * b.y - b.x * a.y; });
-    acc += points.back().x * points.front().y -
-        points.front().x * points.back().y;
+    acc += points.back().x * points.front().y - points.front().x * points.back().y;
     return std::abs(acc) / 2.0;
 }
 
@@ -88,10 +82,8 @@ bool Polygon::hasRightAngle() const
         return false;
     }
     auto dot = [](const Point& u, const Point& v) { return u.x * v.x + u.y * v.y; };
-
     std::vector<size_t> idx(vertexCount());
     std::iota(idx.begin(), idx.end(), 0);
-
     return std::any_of(idx.begin(), idx.end(),
         [&](size_t i)
         {
@@ -119,7 +111,8 @@ bool Polygon::operator==(const Polygon& other) const
             std::vector<Point> res;
             res.reserve(pts.size());
             std::transform(pts.begin(), pts.end(), std::back_inserter(res),
-                [&](const Point& p) { return Point{ p.x - minPt.x, p.y - minPt.y }; });
+                [&](const Point& p)
+                { return Point{ p.x - minPt.x, p.y - minPt.y }; });
             return res;
         };
     return normalize(points) == normalize(other.points);
@@ -137,8 +130,13 @@ std::istream& operator>>(std::istream& in, Polygon& p)
     std::vector<Point> tmp;
     tmp.reserve(n);
     std::copy_n(std::istream_iterator<Point>(in), n, std::back_inserter(tmp));
-
     if (tmp.size() != n)
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    in >> std::ws;
+    if (!in.eof())
     {
         in.setstate(std::ios::failbit);
         return in;

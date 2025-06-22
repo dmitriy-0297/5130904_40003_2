@@ -1,5 +1,4 @@
 ﻿#include "Commands.h"
-
 #include <algorithm>
 #include <functional>
 #include <iomanip>
@@ -21,7 +20,7 @@ namespace
 
     BoundingBox calcBounds(const std::vector<Polygon>& polys)
     {
-        BoundingBox box{};
+        BoundingBox box;
         for (const auto& poly : polys)
         {
             for (const auto& pt : poly.points)
@@ -40,7 +39,6 @@ void executeCommands(const std::vector<Polygon>& polygons)
 {
     std::cout << std::fixed << std::setprecision(1);
     const BoundingBox globalBox = calcBounds(polygons);
-
     std::string line;
     while (std::getline(std::cin, line))
     {
@@ -51,32 +49,28 @@ void executeCommands(const std::vector<Polygon>& polygons)
         std::istringstream iss(line);
         std::string cmd;
         iss >> cmd;
-
         try
         {
             if (cmd == "AREA")
             {
                 std::string arg;
                 iss >> arg;
-                double sum{};
+                double sum = 0.0;
                 if (arg == "EVEN" || arg == "ODD")
                 {
-                    const bool even = (arg == "EVEN");
+                    bool even = arg == "EVEN";
                     sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
                         [even](double a, const Polygon& p)
-                        {
-                            return (p.isEven() == even) ? a + p.area() : a;
-                        });
+                        { return (p.isEven() == even) ? a + p.area() : a; });
                 }
                 else if (arg == "MEAN")
                 {
                     if (polygons.empty())
                     {
-                        throw std::invalid_argument("No polygons");
+                        throw std::invalid_argument("no polygons");
                     }
                     sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
-                        [](double a, const Polygon& p)
-                        { return a + p.area(); });
+                        [](double a, const Polygon& p) { return a + p.area(); });
                     sum /= polygons.size();
                 }
                 else
@@ -88,9 +82,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
                     }
                     sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
                         [v](double a, const Polygon& p)
-                        {
-                            return p.hasVertexCount(v) ? a + p.area() : a;
-                        });
+                        { return p.hasVertexCount(v) ? a + p.area() : a; });
                 }
                 std::cout << sum << '\n';
             }
@@ -152,10 +144,10 @@ void executeCommands(const std::vector<Polygon>& polygons)
             {
                 std::string arg;
                 iss >> arg;
-                size_t cnt{};
+                size_t cnt = 0;
                 if (arg == "EVEN" || arg == "ODD")
                 {
-                    const bool even = (arg == "EVEN");
+                    bool even = arg == "EVEN";
                     cnt = std::count_if(polygons.begin(), polygons.end(),
                         [even](const Polygon& p) { return p.isEven() == even; });
                 }
@@ -182,7 +174,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
                 Polygon target;
                 if (!(iss >> target))
                 {
-                    throw std::invalid_argument("bad SAME poly");
+                    throw std::invalid_argument("bad SAME");
                 }
                 size_t cnt = std::count(polygons.begin(), polygons.end(), target);
                 std::cout << cnt << '\n';
@@ -198,7 +190,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
                 Polygon test;
                 if (!(iss >> test))
                 {
-                    throw std::invalid_argument("bad INFRAME poly");
+                    throw std::invalid_argument("bad INFRAME");
                 }
                 bool inside = std::all_of(test.points.begin(), test.points.end(),
                     [&](const Point& pt)
@@ -210,7 +202,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
             }
             else
             {
-                throw std::invalid_argument("unknown cmd");
+                throw std::invalid_argument("unknown");
             }
         }
         catch (const std::exception&)
