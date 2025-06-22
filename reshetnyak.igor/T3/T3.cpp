@@ -253,56 +253,56 @@ void processCommands(std::vector<Polygon>& polygons){
                 std::cout<<count<<std::endl;
             }
             else if(command=="MAXSEQ"){
+                std::string line;
+                std::getline(std::cin, line);
+                                
+                std::istringstream iss(line);
+                std::string cmd;
+                iss >> cmd;
+
                 size_t numVertices;
-                if(!(std::cin>>numVertices)||numVertices<3){
-                    std::cout<<"<INVALID COMMAND>"<<std::endl;
-                    std::string dummy;
-                    std::getline(std::cin,dummy);
-                    continue;
+                if(!(iss >> numVertices) || numVertices < 3) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    return;
                 }
 
                 Polygon target;
                 char c;
                 Point p;
-                bool valid=true;
-                for(size_t i=0;i<numVertices&&valid;++i){
-                    if(!(std::cin>>c)||c!='('||
-                       !(std::cin>>p.x)||
-                       !(std::cin>>c)||c!=';'||
-                       !(std::cin>>p.y)||
-                       !(std::cin>>c)||c!=')'){
-                        valid=false;
+                int pointsRead = 0;
+                
+                while(pointsRead < numVertices) {
+                    if(!(iss >> c) || c != '(' ||
+                    !(iss >> p.x) ||
+                    !(iss >> c) || c != ';' ||
+                    !(iss >> p.y) ||
+                    !(iss >> c) || c != ')') {
+                        std::cout << "<INVALID COMMAND>" << std::endl;
+                        return;
                     }
-                    if(valid)target.points.push_back(p);
+                    target.points.push_back(p);
+                    pointsRead++;
                 }
 
                 std::string remaining;
-                std::getline(std::cin,remaining);
-                remaining.erase(0,remaining.find_first_not_of(" \t\n\r\f\v"));
-                if(!remaining.empty())valid=false;
-
-                if(!valid||target.points.size()!=numVertices||target.points.size()<3){
-                    std::cout<<"<INVALID COMMAND>"<<std::endl;
-                    continue;
+                std::getline(iss, remaining);
+                remaining.erase(0, remaining.find_first_not_of(" \t\n\r\f\v"));
+                if(!remaining.empty()) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    return;
                 }
 
-                size_t maxCount=0;
-                size_t currentCount=0;
-                for(const auto& poly:polygons){
-                    if(poly.points.size()>=3&&poly==target){
+                size_t maxCount = 0;
+                size_t currentCount = 0;
+                for(const auto& poly : polygons) {
+                    if(poly == target) {
                         currentCount++;
-                        maxCount=std::max(maxCount,currentCount);
-                    }
-                    else{
-                        currentCount=0;
+                        maxCount = std::max(maxCount, currentCount);
+                    } else {
+                        currentCount = 0;
                     }
                 }
-                std::cout<<maxCount<<std::endl;
-            }
-            else{
-                std::cout<<"<INVALID COMMAND>"<<std::endl;
-                std::string dummy;
-                std::getline(std::cin,dummy);
+                std::cout << maxCount << std::endl;
             }
         }
         catch(...){
