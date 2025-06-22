@@ -43,25 +43,28 @@ std::vector<Polygon> readPolygons(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << filename << std::endl;
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 
     std::string line;
     while (std::getline(file, line)) {
         std::istringstream iss(line);
         size_t numVertices;
-        if (!(iss >> numVertices)) continue;
+        if (!(iss >> numVertices) || numVertices < 3) continue;
 
         Polygon poly;
         Point p;
         char c;
         bool valid = true;
-        for (size_t i = 0; i < numVertices; ++i) {
-            if (!(iss >> c >> p.x >> c >> p.y >> c) || c != ')') {
+        for (size_t i = 0; i < numVertices && valid; ++i) {
+            if (!(iss >> c) || c != '(' || 
+                !(iss >> p.x) || 
+                !(iss >> c) || c != ';' || 
+                !(iss >> p.y) || 
+                !(iss >> c) || c != ')') {
                 valid = false;
-                break;
             }
-            poly.points.push_back(p);
+            if (valid) poly.points.push_back(p);
         }
 
         if (valid && poly.points.size() == numVertices) {
@@ -101,6 +104,12 @@ void processCommands(std::vector<Polygon>& polygons) {
                 }
                 else {
                     size_t numVertices = std::stoul(subcmd);
+                    if (numVertices < 3) {
+                        std::cout << "<INVALID COMMAND>" << std::endl;
+                        std::string dummy;
+                        std::getline(std::cin, dummy);
+                        continue;
+                    }
                     auto areaSum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
                         [numVertices](double sum, const Polygon& poly) {
                             return sum + (poly.points.size() == numVertices ? calculateArea(poly) : 0.0);
@@ -170,7 +179,19 @@ void processCommands(std::vector<Polygon>& polygons) {
                     std::cout << count << std::endl;
                 }
                 else {
-                    size_t numVertices = std::stoul(subcmd);
+                    size_t numVertices;
+                    try {
+                        numVertices = std::stoul(subcmd);
+                        if (numVertices < 3) {
+                            throw std::invalid_argument("Vertex count too small");
+                        }
+                    }
+                    catch (...) {
+                        std::cout << "<INVALID COMMAND>" << std::endl;
+                        std::string dummy;
+                        std::getline(std::cin, dummy);
+                        continue;
+                    }
                     size_t count = std::count_if(polygons.begin(), polygons.end(),
                         [numVertices](const Polygon& poly) {
                             return poly.points.size() == numVertices;
@@ -180,14 +201,35 @@ void processCommands(std::vector<Polygon>& polygons) {
             }
             else if (command == "PERMS") {
                 size_t numVertices;
-                std::cin >> numVertices;
+                if (!(std::cin >> numVertices) || numVertices < 3) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    std::string dummy;
+                    std::getline(std::cin, dummy);
+                    continue;
+                }
+
                 Polygon target;
                 char c;
                 Point p;
-                for (size_t i = 0; i < numVertices; ++i) {
-                    std::cin >> c >> p.x >> c >> p.y >> c;
-                    target.points.push_back(p);
+                bool valid = true;
+                for (size_t i = 0; i < numVertices && valid; ++i) {
+                    if (!(std::cin >> c) || c != '(' || 
+                        !(std::cin >> p.x) || 
+                        !(std::cin >> c) || c != ';' || 
+                        !(std::cin >> p.y) || 
+                        !(std::cin >> c) || c != ')') {
+                        valid = false;
+                    }
+                    if (valid) target.points.push_back(p);
                 }
+
+                if (!valid || target.points.size() != numVertices) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    std::string dummy;
+                    std::getline(std::cin, dummy);
+                    continue;
+                }
+
                 std::sort(target.points.begin(), target.points.end());
                 size_t count = std::count_if(polygons.begin(), polygons.end(),
                     [&target, numVertices](const Polygon& poly) {
@@ -200,14 +242,35 @@ void processCommands(std::vector<Polygon>& polygons) {
             }
             else if (command == "MAXSEQ") {
                 size_t numVertices;
-                std::cin >> numVertices;
+                if (!(std::cin >> numVertices) || numVertices < 3) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    std::string dummy;
+                    std::getline(std::cin, dummy);
+                    continue;
+                }
+
                 Polygon target;
                 char c;
                 Point p;
-                for (size_t i = 0; i < numVertices; ++i) {
-                    std::cin >> c >> p.x >> c >> p.y >> c;
-                    target.points.push_back(p);
+                bool valid = true;
+                for (size_t i = 0; i < numVertices && valid; ++i) {
+                    if (!(std::cin >> c) || c != '(' || 
+                        !(std::cin >> p.x) || 
+                        !(std::cin >> c) || c != ';' || 
+                        !(std::cin >> p.y) || 
+                        !(std::cin >> c) || c != ')') {
+                        valid = false;
+                    }
+                    if (valid) target.points.push_back(p);
                 }
+
+                if (!valid || target.points.size() != numVertices) {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    std::string dummy;
+                    std::getline(std::cin, dummy);
+                    continue;
+                }
+
                 size_t maxCount = 0;
                 size_t currentCount = 0;
                 for (const auto& poly : polygons) {
@@ -238,7 +301,7 @@ void processCommands(std::vector<Polygon>& polygons) {
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " filename" << std::endl;
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     auto polygons = readPolygons(argv[1]);
