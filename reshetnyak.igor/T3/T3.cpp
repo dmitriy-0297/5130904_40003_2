@@ -255,7 +255,7 @@ void processCommands(std::vector<Polygon>& polygons){
             else if(command=="MAXSEQ"){
                 std::string line;
                 std::getline(std::cin,line);
-                                
+                
                 std::istringstream iss(line);
                 std::string cmd;
                 iss>>cmd;
