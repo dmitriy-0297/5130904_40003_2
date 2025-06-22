@@ -1,9 +1,12 @@
-#include "Polygon.h"
+﻿#include "Polygon.h"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <iostream>
 #include <iterator>
 #include <numeric>
+#include <tuple>
 #include <stdexcept>
 
 bool Point::operator==(const Point& other) const

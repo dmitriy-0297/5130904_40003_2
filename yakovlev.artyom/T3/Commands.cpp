@@ -1,5 +1,7 @@
-#include "Commands.h"
+﻿#include "Commands.h"
+
 #include <algorithm>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -172,7 +174,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
             else if (cmd == "RECTS")
             {
                 size_t cnt = std::count_if(polygons.begin(), polygons.end(),
-                    &Polygon::isRectangle);
+                    std::mem_fn(&Polygon::isRectangle));
                 std::cout << cnt << '\n';
             }
             else if (cmd == "SAME")
@@ -188,7 +190,7 @@ void executeCommands(const std::vector<Polygon>& polygons)
             else if (cmd == "RIGHTSHAPES")
             {
                 size_t cnt = std::count_if(polygons.begin(), polygons.end(),
-                    &Polygon::hasRightAngle);
+                    std::mem_fn(&Polygon::hasRightAngle));
                 std::cout << cnt << '\n';
             }
             else if (cmd == "INFRAME")
