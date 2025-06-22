@@ -269,7 +269,7 @@ void processCommands(std::vector<Polygon>& polygons) {
                 Polygon target;
                 char c;
                 Point p;
-                int pointsRead = 0;
+                size_t pointsRead = 0;
 
                 while (pointsRead < numVertices) {
                     if (!(iss >> c) || c != '(' ||
