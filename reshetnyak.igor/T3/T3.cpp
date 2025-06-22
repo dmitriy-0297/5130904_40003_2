@@ -1,4 +1,4 @@
-﻿#include <algorithm>
+#include <algorithm>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -43,7 +43,7 @@ std::vector<Polygon> readPolygons(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << filename << std::endl;
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     std::string line;
@@ -238,7 +238,7 @@ void processCommands(std::vector<Polygon>& polygons) {
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " filename" << std::endl;
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     auto polygons = readPolygons(argv[1]);
